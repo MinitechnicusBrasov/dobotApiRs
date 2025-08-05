@@ -65,7 +65,7 @@ pub struct TagJOGCmd {
     pub cmd: JogCmd,
 }
 
-impl Body for TagJOGCmd {
+impl<'a> Body<'a> for TagJOGCmd {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of two unsigned 8-bit integers (`u8`), each 1 byte.
     fn size(&self) -> usize {

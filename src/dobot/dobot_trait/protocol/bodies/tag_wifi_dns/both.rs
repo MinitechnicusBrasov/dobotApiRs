@@ -7,7 +7,7 @@ pub struct TagWIFIDNS {
     pub addr: [u8; 4], // Changed from Ipv4Addr to a fixed-size array [u8; 4]
 }
 
-impl Body for TagWIFIDNS {
+impl<'a> Body<'a> for TagWIFIDNS {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one 4-byte array.
     fn size(&self) -> usize {

@@ -27,7 +27,7 @@ pub struct TagEMotor {
     pub speed: f64,
 }
 
-impl Body for TagEMotor {
+impl<'a> Body<'a> for TagEMotor {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of two `u8`s (1 byte each) and one `f64` (8 bytes),
     /// totaling 1 + 1 + 8 = 10 bytes.

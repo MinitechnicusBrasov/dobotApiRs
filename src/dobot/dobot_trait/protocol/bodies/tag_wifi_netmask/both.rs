@@ -8,7 +8,7 @@ pub struct TagWIFINetmask {
     pub addr: [u8; 4],
 }
 
-impl Body for TagWIFINetmask {
+impl<'a> Body<'a> for TagWIFINetmask {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one 4-byte array.
     fn size(&self) -> usize {

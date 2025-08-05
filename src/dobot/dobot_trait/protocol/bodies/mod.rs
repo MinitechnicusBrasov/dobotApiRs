@@ -39,3 +39,5 @@ pub mod tag_wifi_gateway;
 pub mod tag_wifi_ip_address;
 pub mod tag_wifi_netmask;
 pub mod tag_with_l;
+pub mod general_request;
+pub mod general_response;

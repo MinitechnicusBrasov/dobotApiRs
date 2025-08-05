@@ -8,7 +8,7 @@ pub struct TagHomeParams {
     pub r: f32,
 }
 
-impl Body for TagHomeParams {
+impl<'a> Body<'a> for TagHomeParams {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of 4 floats (`f32`), each 4 bytes.
     fn size(&self) -> usize {

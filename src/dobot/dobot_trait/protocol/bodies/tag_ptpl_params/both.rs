@@ -11,7 +11,7 @@ pub struct TagPTPLParams {
     pub acceleration: f32,
 }
 
-impl Body for TagPTPLParams {
+impl<'a> Body<'a> for TagPTPLParams {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of 2 floats (`f32`), each 4 bytes, totaling 8 bytes.
     fn size(&self) -> usize {

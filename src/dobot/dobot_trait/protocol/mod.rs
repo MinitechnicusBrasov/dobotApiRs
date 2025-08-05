@@ -1,20 +1,20 @@
 pub mod alarm;
 pub mod bodies;
 mod body;
-mod command_id;
+pub mod command_id;
 mod protocol_error;
 pub use body::Body;
 pub use command_id::CommunicationProtocolIDs;
 pub use protocol_error::ProtocolError;
 
-pub struct Protocol<T> {
+pub struct Protocol<'a, T: Body<'a>> {
     pub command_id: CommunicationProtocolIDs,
     pub is_queued: bool,
     pub is_read: bool,
     pub body: T,
 }
 
-impl<T: Body> Protocol<T> {
+impl<'a, T: Body<'a>> Protocol<'a, T> {
     pub fn new(
         command_id: CommunicationProtocolIDs,
         is_queued: bool,
@@ -83,7 +83,7 @@ impl<T: Body> Protocol<T> {
         Ok(index)
     }
 
-    pub fn from_packet(packet: &[u8]) -> Result<Protocol<T>, ProtocolError> {
+    pub fn from_packet(packet: &'a [u8]) -> Result<Protocol<'a, T>, ProtocolError> {
         if packet.len() < 4 {
             return Err(ProtocolError::BufferTooSmall);
         }

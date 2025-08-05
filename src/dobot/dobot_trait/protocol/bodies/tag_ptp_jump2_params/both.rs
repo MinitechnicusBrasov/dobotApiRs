@@ -12,7 +12,7 @@ pub struct TagPTPJump2Params {
     pub z_limit: f32,
 }
 
-impl Body for TagPTPJump2Params {
+impl<'a> Body<'a> for TagPTPJump2Params {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of 3 floats (`f32`), each 4 bytes, totaling 12 bytes.
     fn size(&self) -> usize {

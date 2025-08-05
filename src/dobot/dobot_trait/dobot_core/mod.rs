@@ -1,3 +1,3 @@
-mod command_sender;
-mod dobot_error;
-mod sub_command_dobot;
+pub mod command_sender;
+pub mod dobot_error;
+pub mod sub_command_dobot;

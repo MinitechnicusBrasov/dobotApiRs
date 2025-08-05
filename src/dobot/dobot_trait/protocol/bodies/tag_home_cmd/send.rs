@@ -8,7 +8,7 @@ pub struct TagHomeCmd {
     pub reserved: u32,
 }
 
-impl Body for TagHomeCmd {
+impl<'a> Body<'a> for TagHomeCmd {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one unsigned 32-bit integer (`u32`), which is 4 bytes.
     fn size(&self) -> usize {

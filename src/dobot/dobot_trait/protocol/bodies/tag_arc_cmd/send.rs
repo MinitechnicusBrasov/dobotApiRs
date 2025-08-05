@@ -10,7 +10,7 @@ pub struct Point {
     pub r: f32,
 }
 
-impl Body for Point {
+impl<'a> Body<'a> for Point {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of four `f32`s, each 4 bytes, totaling 16 bytes.
     fn size(&self) -> usize {
@@ -43,7 +43,7 @@ impl Body for Point {
     }
 
     /// Unpacks a byte sequence into a `Point` struct.
-    fn deserialize(buffer: &[u8]) -> Result<Self, ProtocolError> {
+    fn deserialize(buffer: &'a [u8]) -> Result<Self, ProtocolError> {
         let size = 4 * core::mem::size_of::<f32>();
         if buffer.len() < size {
             return Err(ProtocolError::BufferTooSmall);
@@ -85,7 +85,7 @@ pub struct TagARCCmd {
     pub to_point: Point,
 }
 
-impl Body for TagARCCmd {
+impl<'a> Body<'a> for TagARCCmd {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of two `Point` structs, each 16 bytes, totaling 32 bytes.
     fn size(&self) -> usize {
@@ -113,7 +113,7 @@ impl Body for TagARCCmd {
 
     /// Unpacks a byte sequence into a `TagARCCmd` struct.
     /// This corresponds to the Python `unpack` method.
-    fn deserialize(buffer: &[u8]) -> Result<Self, ProtocolError> {
+    fn deserialize(buffer: &'a [u8]) -> Result<Self, ProtocolError> {
         let size = 2 * (4 * core::mem::size_of::<f32>());
         if buffer.len() < size {
             return Err(ProtocolError::BufferTooSmall);

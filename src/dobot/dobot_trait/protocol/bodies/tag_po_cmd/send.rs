@@ -12,7 +12,7 @@ pub struct TagPOCmd {
     pub level: u8,
 }
 
-impl Body for TagPOCmd {
+impl<'a> Body<'a> for TagPOCmd {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one `u8` (1 byte), one `u16` (2 bytes), and one `u8` (1 byte),
     /// totaling 1 + 2 + 1 = 4 bytes.

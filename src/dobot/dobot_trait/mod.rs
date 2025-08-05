@@ -1,2 +1,2 @@
-mod dobot_core;
-mod protocol;
+pub mod dobot_core;
+pub mod protocol;

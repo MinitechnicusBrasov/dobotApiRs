@@ -9,7 +9,7 @@ pub struct TagWIFIIPAddress {
     pub addr: [u8; 4],
 }
 
-impl Body for TagWIFIIPAddress {
+impl<'a> Body<'a> for TagWIFIIPAddress {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one `u8` (1 byte) and a 4-byte array,
     /// totaling 1 + 4 = 5 bytes.

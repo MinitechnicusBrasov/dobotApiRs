@@ -36,7 +36,7 @@ pub struct TagCPParams {
     pub real_time_track: RealTimeTrack,
 }
 
-impl Body for TagCPParams {
+impl<'a> Body<'a> for TagCPParams {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of three `f32`s (4 bytes each) and one `u8` (1 byte),
     /// totaling (3 * 4) + 1 = 13 bytes.

@@ -9,7 +9,7 @@ pub struct TagColor {
     pub blue: u8,
 }
 
-impl Body for TagColor {
+impl<'a> Body<'a> for TagColor {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of three `u8`s, each 1 byte, totaling 3 bytes.
     fn size(&self) -> usize {

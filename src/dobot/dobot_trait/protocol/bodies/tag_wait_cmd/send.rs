@@ -9,7 +9,7 @@ pub struct TagWAITCmd {
     pub timeout: u32,
 }
 
-impl Body for TagWAITCmd {
+impl<'a> Body<'a> for TagWAITCmd {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one `u32`, which is 4 bytes.
     fn size(&self) -> usize {
@@ -26,7 +26,7 @@ impl Body for TagWAITCmd {
 
         // Serialize the timeout value
         buffer[..size].copy_from_slice(&self.timeout.to_le_bytes());
-        
+
         Ok(size)
     }
 
@@ -42,7 +42,7 @@ impl Body for TagWAITCmd {
         let mut timeout_bytes = [0u8; 4];
         timeout_bytes.copy_from_slice(&buffer[..size]);
         let timeout = u32::from_le_bytes(timeout_bytes);
-        
+
         Ok(Self { timeout })
     }
 }

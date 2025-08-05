@@ -14,7 +14,7 @@ pub struct TagARCParams {
     pub r_acceleration: f32,
 }
 
-impl Body for TagARCParams {
+impl<'a> Body<'a> for TagARCParams {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of 4 floats (`f32`), each 4 bytes, totaling 16 bytes.
     fn size(&self) -> usize {
@@ -52,7 +52,7 @@ impl Body for TagARCParams {
 
     /// Unpacks a byte sequence into a `TagARCParams` struct.
     /// This corresponds to the Python `unpack` method.
-    fn deserialize(buffer: &[u8]) -> Result<Self, ProtocolError> {
+    fn deserialize(buffer: &'a [u8]) -> Result<Self, ProtocolError> {
         let size = 4 * core::mem::size_of::<f32>();
         if buffer.len() < size {
             return Err(ProtocolError::BufferTooSmall);

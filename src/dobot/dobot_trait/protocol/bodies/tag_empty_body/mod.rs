@@ -7,7 +7,7 @@ use crate::dobot::dobot_trait::protocol::{Body, protocol_error::ProtocolError};
 #[derive(Debug, PartialEq, Clone)]
 pub struct EmptyBody {}
 
-impl Body for EmptyBody {
+impl<'a> Body<'a> for EmptyBody {
     /// Returns the size of the serialized body in bytes.
     /// Since the body is empty, the size is always 0.
     fn size(&self) -> usize {

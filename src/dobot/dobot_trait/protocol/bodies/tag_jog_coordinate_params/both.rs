@@ -10,7 +10,7 @@ pub struct TagJOGCoordinateParams {
     pub acceleration: [f32; 4],
 }
 
-impl Body for TagJOGCoordinateParams {
+impl<'a> Body<'a> for TagJOGCoordinateParams {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of 8 floats (`f32`), each 4 bytes, totaling 32 bytes.
     fn size(&self) -> usize {

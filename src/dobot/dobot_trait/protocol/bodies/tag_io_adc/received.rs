@@ -8,7 +8,7 @@ pub struct TagIOADC {
     pub value: u16,
 }
 
-impl Body for TagIOADC {
+impl<'a> Body<'a> for TagIOADC {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one `u8` (1 byte) and one `u16` (2 bytes),
     /// totaling 1 + 2 = 3 bytes.

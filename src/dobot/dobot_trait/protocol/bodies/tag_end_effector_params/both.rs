@@ -9,7 +9,7 @@ pub struct TagEndEffectorParams {
     pub z_bias: f64,
 }
 
-impl Body for TagEndEffectorParams {
+impl<'a> Body<'a> for TagEndEffectorParams {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of 3 double-precision floating-point numbers (`f64`),
     /// each 8 bytes.

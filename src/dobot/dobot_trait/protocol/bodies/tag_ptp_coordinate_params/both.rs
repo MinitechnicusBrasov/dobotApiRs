@@ -14,7 +14,7 @@ pub struct TagPTPCoordinateParams {
     pub r_acceleration: f32,
 }
 
-impl Body for TagPTPCoordinateParams {
+impl<'a> Body<'a> for TagPTPCoordinateParams {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of 4 floats (`f32`), each 4 bytes, totaling 16 bytes.
     fn size(&self) -> usize {

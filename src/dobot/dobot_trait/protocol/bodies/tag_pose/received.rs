@@ -13,7 +13,7 @@ pub struct TagPose {
     pub joint_angle: [f32; 4],
 }
 
-impl Body for TagPose {
+impl<'a> Body<'a> for TagPose {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of 8 floats (`f32`), each 4 bytes.
     fn size(&self) -> usize {

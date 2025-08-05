@@ -9,7 +9,7 @@ pub struct TagIOPWM {
     pub duty_cycle: f32,
 }
 
-impl Body for TagIOPWM {
+impl<'a> Body<'a> for TagIOPWM {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one `u8` (1 byte) and two `f32`s (4 bytes each),
     /// totaling 1 + 4 + 4 = 9 bytes.

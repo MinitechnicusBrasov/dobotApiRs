@@ -1,5 +1,5 @@
-use crate::dobot::dobot_trait::protocol::protocol_error::ProtocolError;
 use crate::dobot::dobot_trait::protocol::Body;
+use crate::dobot::dobot_trait::protocol::protocol_error::ProtocolError;
 use core::convert::TryFrom;
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -31,7 +31,7 @@ pub struct TagWithL {
     pub version: TagVersionRail,
 }
 
-impl Body for TagWithL {
+impl<'a> Body<'a> for TagWithL {
     /// Returns the size of the serialized body in bytes.
     /// A boolean is 1 byte, and the enum (as u8) is 1 byte.
     fn size(&self) -> usize {
@@ -68,6 +68,9 @@ impl Body for TagWithL {
         let version_u8 = buffer[1];
         let version = TagVersionRail::try_from(version_u8)?;
 
-        Ok(Self { is_with_rail, version })
+        Ok(Self {
+            is_with_rail,
+            version,
+        })
     }
 }

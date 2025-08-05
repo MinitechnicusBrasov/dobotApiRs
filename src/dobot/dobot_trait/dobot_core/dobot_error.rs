@@ -10,4 +10,8 @@ pub enum DobotError {
     NoResponse,
     #[error("Timeout waiting for response")]
     Timeout,
+    #[error("Serial port error")]
+    Serial,
+    #[error("IO error")]
+    IO,
 }

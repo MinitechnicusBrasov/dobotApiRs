@@ -9,7 +9,7 @@ pub struct TagIODI {
     pub level: Level,
 }
 
-impl Body for TagIODI {
+impl<'a> Body<'a> for TagIODI {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of two `u8`s, each 1 byte, totaling 2 bytes.
     fn size(&self) -> usize {

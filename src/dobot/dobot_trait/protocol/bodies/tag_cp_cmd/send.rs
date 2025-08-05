@@ -35,7 +35,7 @@ pub struct TagCPCmd {
     pub velocity_or_power: f32,
 }
 
-impl Body for TagCPCmd {
+impl<'a> Body<'a> for TagCPCmd {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one `u8` (1 byte) and four `f32`s (4 bytes each),
     /// totaling 1 + (4 * 4) = 17 bytes.

@@ -13,7 +13,7 @@ pub struct TagPTPWithLCmd {
     pub l: f32,
 }
 
-impl Body for TagPTPWithLCmd {
+impl<'a> Body<'a> for TagPTPWithLCmd {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one `u8` (1 byte) and five `f32`s (4 bytes each),
     /// totaling 1 + (5 * 4) = 21 bytes.

@@ -32,7 +32,7 @@ pub struct TagDevice {
     pub version: TagVersionColorSensorAndIR,
 }
 
-impl Body for TagDevice {
+impl<'a> Body<'a> for TagDevice {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of three `u8`s, each 1 byte, totaling 3 bytes.
     fn size(&self) -> usize {

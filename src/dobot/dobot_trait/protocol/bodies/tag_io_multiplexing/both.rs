@@ -40,7 +40,7 @@ pub struct TagIOMultiplexing {
     pub multiplex: IOFunction,
 }
 
-impl Body for TagIOMultiplexing {
+impl<'a> Body<'a> for TagIOMultiplexing {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of two `u8`s, each 1 byte, totaling 2 bytes.
     fn size(&self) -> usize {

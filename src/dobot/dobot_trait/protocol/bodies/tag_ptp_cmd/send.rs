@@ -49,7 +49,7 @@ pub struct TagPTPCmd {
     pub r: f32,
 }
 
-impl Body for TagPTPCmd {
+impl<'a> Body<'a> for TagPTPCmd {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one `u8` (1 byte) and four `f32`s (4 bytes each),
     /// totaling 1 + (4 * 4) = 17 bytes.

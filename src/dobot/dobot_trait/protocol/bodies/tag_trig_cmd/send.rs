@@ -1,5 +1,5 @@
-use crate::dobot::dobot_trait::protocol::protocol_error::ProtocolError;
 use crate::dobot::dobot_trait::protocol::Body;
+use crate::dobot::dobot_trait::protocol::protocol_error::ProtocolError;
 use core::convert::TryFrom;
 
 /// Represents the Trigger Mode.
@@ -58,7 +58,7 @@ pub struct TagTRIGCmd {
     pub threshold: u16,
 }
 
-impl Body for TagTRIGCmd {
+impl<'a> Body<'a> for TagTRIGCmd {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of three `u8`s (1 byte each) and one `u16` (2 bytes),
     /// totaling 1 + 1 + 1 + 2 = 5 bytes.
@@ -90,10 +90,10 @@ impl Body for TagTRIGCmd {
         // Serialize the condition enum value as a u8
         buffer[offset..offset + u8_size].copy_from_slice(&(self.condition as u8).to_le_bytes());
         offset += u8_size;
-        
+
         // Serialize the threshold
         buffer[offset..offset + u16_size].copy_from_slice(&self.threshold.to_le_bytes());
-        
+
         Ok(size)
     }
 
@@ -103,7 +103,7 @@ impl Body for TagTRIGCmd {
         if buffer.len() < size {
             return Err(ProtocolError::BufferTooSmall);
         }
-        
+
         let mut offset = 0;
         let u8_size = core::mem::size_of::<u8>();
         let u16_size = core::mem::size_of::<u16>();
@@ -121,12 +121,17 @@ impl Body for TagTRIGCmd {
         // Deserialize the condition `u8` and convert to `TriggerCondition` enum
         let condition = TriggerCondition::try_from(buffer[offset])?;
         offset += u8_size;
-        
+
         // Deserialize the threshold
         let mut threshold_bytes = [0u8; 2];
         threshold_bytes.copy_from_slice(&buffer[offset..offset + u16_size]);
         let threshold = u16::from_le_bytes(threshold_bytes);
 
-        Ok(Self { address, mode, condition, threshold })
+        Ok(Self {
+            address,
+            mode,
+            condition,
+            threshold,
+        })
     }
 }

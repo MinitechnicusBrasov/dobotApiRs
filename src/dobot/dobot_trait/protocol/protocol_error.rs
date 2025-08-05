@@ -22,4 +22,6 @@ pub enum ProtocolError {
     InvalidAlarmCode(u16),
     #[error("Invalid Handhold Teaching Trigger Mode {0}")]
     InvalidHHTTrigMode(u8),
+    #[error("Invalid serialized or deserialized operation")]
+    InvalidOperation,
 }

@@ -8,7 +8,7 @@ pub struct TagWIFIGateway {
     pub addr: [u8; 4],
 }
 
-impl Body for TagWIFIGateway {
+impl<'a> Body<'a> for TagWIFIGateway {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one 4-byte array.
     fn size(&self) -> usize {

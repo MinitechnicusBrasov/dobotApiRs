@@ -8,7 +8,7 @@ pub struct TagAutoLevelingParams {
     pub accuracy: f32,
 }
 
-impl Body for TagAutoLevelingParams {
+impl<'a> Body<'a> for TagAutoLevelingParams {
     /// Returns the size of the serialized body in bytes.
     /// This is composed of one unsigned 8-bit integer (`u8`) and one float (`f32`),
     /// totaling 1 + 4 = 5 bytes.
@@ -40,7 +40,7 @@ impl Body for TagAutoLevelingParams {
 
     /// Unpacks a byte sequence into a `TagAutoLevelingParams` struct.
     /// This corresponds to the Python `unpack` method.
-    fn deserialize(buffer: &[u8]) -> Result<Self, ProtocolError> {
+    fn deserialize(buffer: &'a [u8]) -> Result<Self, ProtocolError> {
         let size = 5;
         if buffer.len() != size {
             return Err(ProtocolError::BufferTooSmall);

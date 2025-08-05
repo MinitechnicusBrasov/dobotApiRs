@@ -1,5 +1,5 @@
-use crate::dobot::dobot_trait::protocol::protocol_error::ProtocolError;
 use crate::dobot::dobot_trait::protocol::Body;
+use crate::dobot::dobot_trait::protocol::protocol_error::ProtocolError;
 
 /// Represents a return tag with rail information.
 /// This struct corresponds to the Python `tagWithLReturn` dataclass.
@@ -8,7 +8,7 @@ pub struct TagWithLReturn {
     pub is_with_rail: bool,
 }
 
-impl Body for TagWithLReturn {
+impl<'a> Body<'a> for TagWithLReturn {
     /// Returns the size of the serialized body in bytes.
     /// A boolean is serialized as a single byte.
     fn size(&self) -> usize {
