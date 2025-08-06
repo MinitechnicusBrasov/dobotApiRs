@@ -1,3 +1,5 @@
+#[cfg(feature = "std")]
+mod test;
 use critical_section::Mutex;
 
 use crate::dobot::dobot_trait::{
@@ -27,6 +29,7 @@ impl<'a, T: CommandSender> DeviceControl for DeviceSerialControl<'a, T> {
         let request_body = GeneralRequest {
             params: device_serial_number,
         };
+
         let mut response_buffer = [0u8; 128];
         let _response = critical_section::with(|cs| {
             self.command_sender.borrow(cs);

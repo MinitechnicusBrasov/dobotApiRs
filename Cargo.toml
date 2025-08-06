@@ -1,6 +1,6 @@
 [package]
 name = "dobotApiRs"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 
 [dependencies]
@@ -8,6 +8,9 @@ critical-section = "1.2.0"
 paste = "1.0.15"
 serialport = "4.7.2"
 thiserror = "2.0.12"
+
+[dev-dependencies]
+critical-section = { version = "1.2", features = ["std"]}
 
 [features]
 default = ["std"]

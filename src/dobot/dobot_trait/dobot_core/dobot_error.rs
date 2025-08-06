@@ -2,7 +2,7 @@ use thiserror::Error;
 
 use crate::dobot::dobot_trait::protocol::ProtocolError;
 
-#[derive(Debug, Error, PartialEq, Eq)]
+#[derive(Debug, Error, PartialEq, Eq, Clone)]
 pub enum DobotError {
     #[error("A Protocol packet error occured: {0}")]
     Protocol(#[from] ProtocolError),

@@ -20,7 +20,7 @@ impl DobotCommandSender {
         Ok(Self { port })
     }
 
-    pub fn send_command_with_params<'a, T: Body<'a>>(
+    pub fn send_command_with_params<'a, T: Body<'a> + 'a>(
         &'a mut self,
         id: CommunicationProtocolIDs,
         is_read: bool,
