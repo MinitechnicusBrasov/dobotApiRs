@@ -2,7 +2,7 @@ use crate::dobot::dobot_trait::protocol::protocol_error::ProtocolError;
 
 /// Represents the various alarm codes from the Dobot Magician.
 #[derive(Debug, PartialEq, Clone, Copy)]
-#[repr(u16)]
+#[repr(u8)]
 pub enum Alarm {
     // Common alarms
     CommonResetting = 0x00,
@@ -143,7 +143,7 @@ pub enum Alarm {
 }
 
 impl Alarm {
-    pub fn try_from_u16(value: u16) -> Result<Self, ProtocolError> {
+    pub fn try_from_u8(value: u8) -> Result<Self, ProtocolError> {
         match value {
             0x00 => Ok(Alarm::CommonResetting),
             0x01 => Ok(Alarm::CommonUndefinedInstruction),
