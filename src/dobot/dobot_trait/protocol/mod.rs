@@ -5,6 +5,7 @@ pub mod command_id;
 mod protocol_error;
 pub use body::Body;
 pub use command_id::CommunicationProtocolIDs;
+use core::marker::PhantomData;
 pub use protocol_error::ProtocolError;
 
 pub struct Protocol<'a, T: Body<'a>> {
@@ -12,6 +13,8 @@ pub struct Protocol<'a, T: Body<'a>> {
     pub is_queued: bool,
     pub is_read: bool,
     pub body: T,
+
+    _phantom: PhantomData<&'a T>,
 }
 
 impl<'a, T: Body<'a>> Protocol<'a, T> {
@@ -26,11 +29,12 @@ impl<'a, T: Body<'a>> Protocol<'a, T> {
             is_queued,
             is_read,
             body,
+            _phantom: PhantomData,
         }
     }
 
     fn calculate_checksum(payload: &[u8]) -> u8 {
-        let sum: u8 = payload.iter().copied().sum();
+        let sum: u8 = payload.iter().copied().fold(0u8, |acc, x| acc.wrapping_add(x));
         (!sum).wrapping_add(1)
     }
 
@@ -124,6 +128,7 @@ impl<'a, T: Body<'a>> Protocol<'a, T> {
             is_queued,
             is_read,
             body,
+            _phantom: PhantomData,
         })
     }
 }

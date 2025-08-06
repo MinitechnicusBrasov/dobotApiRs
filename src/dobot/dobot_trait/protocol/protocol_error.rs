@@ -1,6 +1,6 @@
 use thiserror::Error; // Import Infallible
 
-#[derive(Debug, Error, PartialEq, Eq)]
+#[derive(Debug, Error, PartialEq, Eq, Clone)]
 pub enum ProtocolError {
     #[error("The provided buffer was too small to hold the entire packet")]
     BufferTooSmall,
