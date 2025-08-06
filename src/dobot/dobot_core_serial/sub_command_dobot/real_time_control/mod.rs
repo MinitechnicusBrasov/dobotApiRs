@@ -75,7 +75,7 @@ impl<'a, T: CommandSender> RealTimeControl for RealTimePoseSerialControl<'a, T> 
             request_body,
             &mut response_buffer,
         )?;
-        if response.params.len() != core::mem::size_of::<f32>() {
+        if response.params.len() < core::mem::size_of::<f32>() {
             return Err(DobotError::Protocol(ProtocolError::BufferTooSmall));
         }
         let pose = f32::from_le_bytes([response.params[0], response.params[1], response.params[2], response.params[3]]);
