@@ -5,7 +5,7 @@ pub trait AlarmControl {
     ///
     /// Returns a `[Alarm; 16]` array representing the alarm state.
     /// Each bit in the 16 bytes corresponds to an alarm state.
-    fn get_active_alarms(&mut self) -> Result<[Alarm; 16], DobotError>;
+    fn get_active_alarms(&mut self) -> Result<[Option<Alarm>; 128], DobotError>;
 
     /// Clears all alarm states of the Dobot.
     fn clear_all_alarms_state(&mut self) -> Result<(), DobotError>;
