@@ -19,7 +19,7 @@ pub enum ProtocolError {
     #[error("Invalid tag version: {0}")]
     InvalidTagVersion(u8),
     #[error("Invalid alarm code: {0}")]
-    InvalidAlarmCode(u16),
+    InvalidAlarmCode(u8),
     #[error("Invalid Handhold Teaching Trigger Mode {0}")]
     InvalidHHTTrigMode(u8),
     #[error("Invalid serialized or deserialized operation")]
