@@ -1,5 +1,5 @@
 use crate::dobot::dobot_trait::protocol::{
-    Body, CommunicationProtocolIDs, Protocol, bodies::general_response::GeneralResponse,
+    bodies::general_response::GeneralResponse, Body, CommunicationProtocolIDs, Protocol, ProtocolError
 };
 
 use super::dobot_error::DobotError;
@@ -24,14 +24,19 @@ pub trait CommandSender {
             .to_packet(&mut request_buffer)
             .map_err(|e| DobotError::Protocol(e))?;
 
-        // let mut response_buffer = [0u8; 128];
-        let response_len = self.send_raw_packet(&request_buffer[..request_len], response_buffer)?;
+        let mut response_temp_buffer = [0u8; 128];
+        let response_len = self.send_raw_packet(&request_buffer[..request_len], &mut response_temp_buffer)?;
 
         let response_protocol =
-            Protocol::<GeneralResponse>::from_packet(&response_buffer[..response_len])
+            Protocol::<GeneralResponse>::from_packet(&response_temp_buffer[..response_len])
                 .map_err(|e| DobotError::Protocol(e))?;
 
-        Ok(response_protocol.body)
+        if response_buffer.len() < response_protocol.body.params.len() {
+            return Err(DobotError::Protocol(ProtocolError::BufferTooSmall));
+        }
+        response_buffer[..response_protocol.body.params.len()].copy_from_slice(response_protocol.body.params);
+        let response_body = GeneralResponse { params: &response_buffer[..response_protocol.body.params.len()] };
+        Ok(response_body)
     }
 }
 
@@ -79,6 +84,7 @@ pub mod mock_command_sender {
             // Simulate writing the canned response to the buffer.
             let response_bytes = self.canned_response.borrow();
             let len = response_bytes.len();
+            println!("Response bytes: {:?}\nResponse buffer: {:?}", &response_bytes, &response_buffer);
             if response_buffer.len() < len {
                 return Err(DobotError::Protocol(ProtocolError::BufferTooSmall));
             }

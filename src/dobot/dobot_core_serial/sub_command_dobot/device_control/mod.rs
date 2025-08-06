@@ -46,21 +46,15 @@ impl<'a, T: CommandSender> DeviceControl for DeviceSerialControl<'a, T> {
     }
 
     fn get_device_sn(&mut self, buffer: &mut [u8]) -> Result<usize, DobotError> {
-        let mut response_buffer = [0u8; 128];
         let sender = self.command_sender.get_mut();
         let response_body = sender.send_command_with_params(
             CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Sn),
             true,
             GeneralRequest { params: &[] },
-            &mut response_buffer,
+            buffer,
         )?;
 
-        let len = response_body.params.len();
-        if buffer.len() < len {
-            return Err(DobotError::Protocol(ProtocolError::BufferTooSmall));
-        }
-        buffer[..len].copy_from_slice(&response_body.params);
-        Ok(len)
+        Ok(response_body.params.len())
     }
 
     fn set_device_name(&mut self, device_name: &[u8]) -> Result<(), DobotError> {
@@ -81,20 +75,14 @@ impl<'a, T: CommandSender> DeviceControl for DeviceSerialControl<'a, T> {
 
     fn get_device_name(&mut self, buffer: &mut [u8]) -> Result<usize, DobotError> {
         let sender = self.command_sender.get_mut();
-        let mut response_buffer = [0u8; 128];
         let response_body = sender.send_command_with_params(
             CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name),
             true,
             GeneralRequest { params: &[] },
-            &mut response_buffer,
+            buffer,
         )?;
 
-        let len = response_body.params.len();
-        if buffer.len() < len {
-            return Err(DobotError::Protocol(ProtocolError::BufferTooSmall));
-        }
-        buffer[..len].copy_from_slice(&response_body.params);
-        Ok(len)
+        Ok(response_body.params.len())
     }
 
     fn get_device_version(&mut self) -> Result<(u8, u8, u8), DobotError> {

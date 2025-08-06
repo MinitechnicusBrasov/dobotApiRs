@@ -104,7 +104,7 @@ mod tests {
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
         let mut mutex = Mutex::new(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
-        let mut buffer = [0u8; 32];
+        let mut buffer = [0u8; 8];
 
         let result = device_control.get_device_name(&mut buffer);
 

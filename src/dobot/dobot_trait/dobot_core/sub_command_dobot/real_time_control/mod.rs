@@ -2,7 +2,7 @@ use crate::dobot::dobot_trait::{
     dobot_core::dobot_error::DobotError, protocol::bodies::tag_pose::TagPose,
 };
 
-pub trait RealTimePose {
+pub trait RealTimeControl {
     /// Resets the real-time pose of the robot.
     ///
     /// `manual`: Manual reset flag (0 = auto, 1 = manual with angles).
