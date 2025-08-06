@@ -11,7 +11,7 @@ mod tests {
             },
             protocol::{
                 bodies::tag_pose::TagPose,
-                command_id::DeviceInfoIDs,
+                command_id::{DeviceInfoIDs, DevicePoseIDs},
                 CommunicationProtocolIDs, ProtocolError,
             },
         }
@@ -25,7 +25,7 @@ mod tests {
         let front_arm_angle: f32 = 4.56;
 
         let mock_response = create_response_packet(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name),
+            CommunicationProtocolIDs::DevicePose(DevicePoseIDs::ResetPose),
             b"",
         );
         let length = mock_response.len();
@@ -83,7 +83,7 @@ mod tests {
         serialized_pose.extend_from_slice(&expected_pose.joint_angle[3].to_le_bytes());
 
         let mock_response = create_response_packet(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name),
+            CommunicationProtocolIDs::DevicePose(DevicePoseIDs::GetPose),
             &serialized_pose,
         );
         let length = mock_response.len();
@@ -102,7 +102,7 @@ mod tests {
     fn test_get_pose_invalid_response() {
         let malformed_response_body = [0u8; 4]; // Incorrect size for a TagPose
         let mock_response = create_response_packet(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name),
+            CommunicationProtocolIDs::DevicePose(DevicePoseIDs::GetPose),
             &malformed_response_body,
         );
         let length = mock_response.len();
@@ -126,7 +126,7 @@ mod tests {
         let expected_rail_pose: f32 = 50.5;
         let params = expected_rail_pose.to_le_bytes();
         let mock_response = create_response_packet(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name),
+            CommunicationProtocolIDs::DevicePose(DevicePoseIDs::GetPoseL),
             &params,
         );
         let length = mock_response.len();
@@ -145,7 +145,7 @@ mod tests {
     fn test_get_pose_rail_invalid_response() {
         let malformed_response_body = [0u8; 3]; // Incorrect size for an f32
         let mock_response = create_response_packet(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name),
+            CommunicationProtocolIDs::DevicePose(DevicePoseIDs::GetPoseL),
             &malformed_response_body,
         );
         let length = mock_response.len();
