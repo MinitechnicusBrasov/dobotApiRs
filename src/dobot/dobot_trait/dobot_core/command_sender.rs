@@ -1,5 +1,6 @@
 use crate::dobot::dobot_trait::protocol::{
-    bodies::general_response::GeneralResponse, Body, CommunicationProtocolIDs, Protocol, ProtocolError
+    Body, CommunicationProtocolIDs, Protocol, ProtocolError,
+    bodies::general_response::GeneralResponse,
 };
 
 use super::dobot_error::DobotError;
@@ -25,7 +26,8 @@ pub trait CommandSender {
             .map_err(|e| DobotError::Protocol(e))?;
 
         let mut response_temp_buffer = [0u8; 128];
-        let response_len = self.send_raw_packet(&request_buffer[..request_len], &mut response_temp_buffer)?;
+        let response_len =
+            self.send_raw_packet(&request_buffer[..request_len], &mut response_temp_buffer)?;
 
         let response_protocol =
             Protocol::<GeneralResponse>::from_packet(&response_temp_buffer[..response_len])
@@ -34,8 +36,11 @@ pub trait CommandSender {
         if response_buffer.len() < response_protocol.body.params.len() {
             return Err(DobotError::Protocol(ProtocolError::BufferTooSmall));
         }
-        response_buffer[..response_protocol.body.params.len()].copy_from_slice(response_protocol.body.params);
-        let response_body = GeneralResponse { params: &response_buffer[..response_protocol.body.params.len()] };
+        response_buffer[..response_protocol.body.params.len()]
+            .copy_from_slice(response_protocol.body.params);
+        let response_body = GeneralResponse {
+            params: &response_buffer[..response_protocol.body.params.len()],
+        };
         Ok(response_body)
     }
 }
@@ -84,7 +89,10 @@ pub mod mock_command_sender {
             // Simulate writing the canned response to the buffer.
             let response_bytes = self.canned_response.borrow();
             let len = response_bytes.len();
-            println!("Response bytes: {:?}\nResponse buffer: {:?}", &response_bytes, &response_buffer);
+            println!(
+                "Response bytes: {:?}\nResponse buffer: {:?}",
+                &response_bytes, &response_buffer
+            );
             if response_buffer.len() < len {
                 return Err(DobotError::Protocol(ProtocolError::BufferTooSmall));
             }
