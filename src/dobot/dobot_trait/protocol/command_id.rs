@@ -87,7 +87,8 @@ define_protocol_group! {
 // ALARM
 define_protocol_group! {
     Alarm, AlarmIDs, 20, {
-        AlarmState = 0,
+        GetAlarmState = 0,
+        ClearAlarmState = 1,
     }
 }
 
