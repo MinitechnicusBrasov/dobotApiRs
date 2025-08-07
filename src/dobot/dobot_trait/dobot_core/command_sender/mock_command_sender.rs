@@ -90,7 +90,7 @@ pub fn create_response_packet(id: CommunicationProtocolIDs, params: &[u8]) -> Ve
 }
 
 // Helper function to create a request packet for assertion purposes.
-pub fn create_request_packet<'a, T: Body<'a> + 'a>(
+pub fn create_request_packet<'a, T: Body + 'a>(
     id: CommunicationProtocolIDs,
     is_read: bool,
     params: T,

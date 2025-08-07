@@ -23,3 +23,11 @@ pub enum DobotError {
     #[error("IO error")]
     IO,
 }
+
+#[cfg(feature = "std")]
+pub fn parse_poison_err<T, U>(result: Result<T, PoisonError<U>>) -> Result<T, DobotError> {
+    match result {
+        Ok(x) => Ok(x),
+        Err(_) => Err(DobotError::SenderPoisoned),
+    }
+}

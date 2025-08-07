@@ -1,10 +1,10 @@
 #[cfg(feature = "std")]
 mod test;
-use critical_section::Mutex;
 
 use crate::dobot::dobot_trait::{
     dobot_core::{
-        command_sender::CommandSender, dobot_error::DobotError,
+        command_sender::{CommandSender, Dobot},
+        dobot_error::{DobotError, parse_poison_err},
         sub_command_dobot::device_control::DeviceControl,
     },
     protocol::{
@@ -12,14 +12,15 @@ use crate::dobot::dobot_trait::{
         bodies::{general_request::GeneralRequest, tag_with_l::TagWithL},
         command_id::DeviceInfoIDs,
     },
+    rwlock::RwLock,
 };
 
 pub struct DeviceSerialControl<'a, T: CommandSender> {
-    command_sender: &'a mut Mutex<T>,
+    command_sender: &'a mut RwLock<Dobot<T>>,
 }
 
 impl<'a, T: CommandSender> DeviceSerialControl<'a, T> {
-    pub fn new(command_sender: &'a mut Mutex<T>) -> Self {
+    pub fn new(command_sender: &'a mut RwLock<Dobot<T>>) -> Self {
         Self { command_sender }
     }
 }
@@ -31,17 +32,16 @@ impl<'a, T: CommandSender> DeviceControl for DeviceSerialControl<'a, T> {
         };
 
         let mut response_buffer = [0u8; 128];
-        let _response = critical_section::with(|cs| {
-            self.command_sender.borrow(cs);
-            let borrowed = self.command_sender.get_mut();
+        let sender = parse_poison_err(self.command_sender.get_mut())?;
+        let test = spin::RwLock::new(true);
 
-            borrowed.send_command_with_params(
-                CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Sn),
-                false,
-                request_body,
-                &mut response_buffer,
-            )
-        })?;
+        sender.send_command(
+            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Sn),
+            false,
+            false,
+            request_body,
+            &mut response_buffer,
+        );
         Ok(())
     }
 
