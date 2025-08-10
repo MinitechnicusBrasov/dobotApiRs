@@ -41,3 +41,4 @@ pub mod tag_wifi_netmask;
 pub mod tag_with_l;
 pub mod general_request;
 pub mod general_response;
+pub mod tag_queue;

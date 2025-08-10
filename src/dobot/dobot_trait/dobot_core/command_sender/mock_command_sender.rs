@@ -56,6 +56,7 @@ impl CommandSender for MockCommandSender {
             &response_bytes, &response_buffer
         );
         if response_buffer.len() < len {
+            println!("Reached");
             return Err(DobotError::Protocol(ProtocolError::BufferTooSmall));
         }
         response_buffer[..len].copy_from_slice(&response_bytes);
@@ -90,7 +91,7 @@ pub fn create_response_packet(id: CommunicationProtocolIDs, params: &[u8]) -> Ve
 }
 
 // Helper function to create a request packet for assertion purposes.
-pub fn create_request_packet<'a, T: Body + 'a>(
+pub fn create_request_packet<'a, T: Body<'a> + 'a>(
     id: CommunicationProtocolIDs,
     is_read: bool,
     params: T,
@@ -99,4 +100,11 @@ pub fn create_request_packet<'a, T: Body + 'a>(
     let mut buffer = [0u8; 128];
     let len = protocol.to_packet(&mut buffer).unwrap();
     buffer[..len].to_vec()
+}
+
+#[macro_export]
+macro_rules! create_mock_sender_lock {
+    ($mock_sender: expr) => {
+      RwLock::new(Dobot::new($mock_sender))  
+    };
 }

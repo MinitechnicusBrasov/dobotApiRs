@@ -5,38 +5,33 @@ use critical_section::Mutex;
 
 use crate::dobot::dobot_trait::{
     dobot_core::{
-        command_sender::CommandSender, dobot_error::DobotError,
+        command_sender::{CommandSender, Dobot}, dobot_error::DobotError,
         sub_command_dobot::alarm_control::AlarmControl,
     },
     protocol::{
-        CommunicationProtocolIDs, ProtocolError, alarm::Alarm, bodies::tag_empty_body::EmptyBody,
-        command_id::AlarmIDs,
-    },
+        alarm::Alarm, bodies::{general_response::GeneralResponse, tag_empty_body::EmptyBody}, command_id::AlarmIDs, CommunicationProtocolIDs, ProtocolError
+    }, rwlock::RwLock,
 };
 
 pub struct AlarmSerialControl<'a, T: CommandSender> {
-    command_sender: &'a mut Mutex<T>,
+    command_sender: &'a mut RwLock<Dobot<T>>,
 }
 
 impl<'a, T: CommandSender> AlarmSerialControl<'a, T> {
-    pub fn new(command_sender: &'a mut Mutex<T>) -> Self {
+    pub fn new(command_sender: &'a mut RwLock<Dobot<T>>) -> Self {
         Self { command_sender }
     }
 }
 
 impl<'a, T: CommandSender> AlarmControl for AlarmSerialControl<'a, T> {
     fn get_active_alarms(&mut self) -> Result<[Option<Alarm>; 128], DobotError> {
-        let sender = self.command_sender.get_mut();
+        let sender = create_sender!(self.command_sender)?;
         let mut response_buffer = [0u8; 16];
-        let request_body = EmptyBody {};
 
-        let response = sender.send_command_with_params(
-            CommunicationProtocolIDs::Alarm(AlarmIDs::GetAlarmState),
-            false,
-            request_body,
-            &mut response_buffer,
-        )?;
+        let response = send_cmd!(get sender, GeneralResponse, CommunicationProtocolIDs::Alarm(AlarmIDs::GetAlarmState), &mut response_buffer)?;
 
+
+        println!("{}", response.params.len());
         if response.params.len() < 16 {
             return Err(DobotError::Protocol(ProtocolError::BufferTooSmall));
         }
@@ -59,16 +54,9 @@ impl<'a, T: CommandSender> AlarmControl for AlarmSerialControl<'a, T> {
     }
 
     fn clear_all_alarms_state(&mut self) -> Result<(), DobotError> {
-        let sender = self.command_sender.get_mut();
-        let mut response_buffer = [0u8; 0];
-        let request_body = EmptyBody {};
+        let sender = create_sender!(self.command_sender)?;
 
-        sender.send_command_with_params(
-            CommunicationProtocolIDs::Alarm(AlarmIDs::ClearAlarmState),
-            true,
-            request_body,
-            &mut response_buffer,
-        )?;
+        send_cmd!(send sender, EmptyBody, CommunicationProtocolIDs::Alarm(AlarmIDs::ClearAlarmState), EmptyBody {  })?;
         Ok(())
     }
 }

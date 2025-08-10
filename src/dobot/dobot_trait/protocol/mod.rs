@@ -34,21 +34,17 @@ impl<'a, T: Body<'a>> Protocol<'a, T> {
     }
 
     fn calculate_checksum(payload: &[u8]) -> u8 {
-        let sum: u8 = payload.iter().copied().fold(0u8, |acc, x| acc.wrapping_add(x));
+        let sum: u8 = payload
+            .iter()
+            .copied()
+            .fold(0u8, |acc, x| acc.wrapping_add(x));
         (!sum).wrapping_add(1)
     }
 
     pub fn to_packet(&self, buffer: &mut [u8]) -> Result<usize, ProtocolError> {
         let body_size = self.body.size();
 
-        let body_and_queued_index_size = if self.is_queued {
-            if body_size != 0 {
-                return Err(ProtocolError::PassedBodyAndQueuedIndex);
-            }
-            8
-        } else {
-            body_size
-        };
+        let body_and_queued_index_size = body_size;
 
         let content_length = 1 + 1 + body_and_queued_index_size;
         let total_packet_size = 2 + 1 + content_length + 1;

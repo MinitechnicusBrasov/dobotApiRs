@@ -5,20 +5,20 @@ use critical_section::Mutex;
 
 use crate::dobot::dobot_trait::{
     dobot_core::{
-        command_sender::CommandSender, dobot_error::DobotError,
+        command_sender::{CommandSender, Dobot}, dobot_error::DobotError,
         sub_command_dobot::real_time_control::RealTimeControl,
     },
     protocol::{
-        bodies::{general_request::GeneralRequest, tag_empty_body::EmptyBody, tag_pose::TagPose}, command_id::DeviceInfoIDs, Body, CommunicationProtocolIDs, ProtocolError
-    },
+        bodies::{general_request::GeneralRequest, general_response::GeneralResponse, tag_empty_body::EmptyBody, tag_pose::TagPose}, command_id::{DeviceInfoIDs, DevicePoseIDs}, Body, CommunicationProtocolIDs, ProtocolError
+    }, rwlock::RwLock,
 };
 
 pub struct RealTimePoseSerialControl<'a, T: CommandSender> {
-    command_sender: &'a mut Mutex<T>,
+    command_sender: &'a mut RwLock<Dobot<T>>,
 }
 
 impl<'a, T: CommandSender> RealTimePoseSerialControl<'a, T> {
-    pub fn new(command_sender: &'a mut Mutex<T>) -> Self {
+    pub fn new(command_sender: &'a mut RwLock<Dobot<T>>) -> Self {
         Self { command_sender }
     }
 }
@@ -37,44 +37,27 @@ impl<'a, T: CommandSender> RealTimeControl for RealTimePoseSerialControl<'a, T> 
         let request_body = GeneralRequest {
             params: &request_buffer,
         };
-        let sender = self.command_sender.get_mut();
-        let mut response_buffer = [0u8; 128];
+        let sender = create_sender!(self.command_sender)?;
+        send_cmd!(send sender, GeneralRequest, CommunicationProtocolIDs::DevicePose(DevicePoseIDs::ResetPose), request_body, write=true)?;
 
-        sender.send_command_with_params(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name),
-            false,
-            request_body,
-            &mut response_buffer,
-        )?;
         Ok(())
     }
 
     fn get_pose(&mut self) -> Result<TagPose, DobotError> {
-        let sender = self.command_sender.get_mut();
+        let sender = create_sender!(self.command_sender)?;
         let mut response_buffer = [0u8; 32];
 
-        let request_body = EmptyBody {};
-        let response = sender.send_command_with_params(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name),
-            false,
-            request_body,
-            &mut response_buffer,
-        )?;
-        let pose = TagPose::deserialize(response.params)?;
-        Ok(pose)
+        let response = send_cmd!(get sender, TagPose, CommunicationProtocolIDs::DevicePose(DevicePoseIDs::GetPose), &mut response_buffer)?;
+        Ok(response)
     }
 
     fn get_pose_rail(&mut self) -> Result<f32, DobotError> {
-        let sender = self.command_sender.get_mut();
+        let sender = create_sender!(self.command_sender)?;
         let mut response_buffer = [0u8; 4];
+        
 
-        let request_body = EmptyBody {};
-        let response = sender.send_command_with_params(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name),
-            false,
-            request_body,
-            &mut response_buffer,
-        )?;
+        let response = send_cmd!(get sender, GeneralResponse, CommunicationProtocolIDs::DevicePose(DevicePoseIDs::GetPoseL), &mut response_buffer)?;
+
         if response.params.len() < core::mem::size_of::<f32>() {
             return Err(DobotError::Protocol(ProtocolError::BufferTooSmall));
         }

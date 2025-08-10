@@ -6,15 +6,13 @@ mod tests {
         dobot_core_serial::sub_command_dobot::device_control::DeviceSerialControl,
         dobot_trait::{
             dobot_core::{
-                command_sender::mock_command_sender::{MockCommandSender, create_response_packet},
+                command_sender::{mock_command_sender::{create_response_packet, MockCommandSender}, Dobot},
                 dobot_error::DobotError,
                 sub_command_dobot::device_control::DeviceControl,
             },
             protocol::{
-                CommunicationProtocolIDs, ProtocolError,
-                bodies::tag_with_l::{TagVersionRail, TagWithL},
-                command_id::DeviceInfoIDs,
-            },
+                bodies::tag_with_l::{TagVersionRail, TagWithL}, command_id::DeviceInfoIDs, CommunicationProtocolIDs, ProtocolError
+            }, rwlock::RwLock,
         },
     };
 
@@ -25,7 +23,7 @@ mod tests {
             create_response_packet(CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Sn), b"");
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
 
         let result = device_control.set_device_sn(sn);
@@ -41,7 +39,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
         let mut buffer = [0u8; 32];
 
@@ -63,7 +61,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
         let mut buffer = [0u8; 5]; // Buffer is smaller than the expected SN
 
@@ -86,7 +84,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
 
         let result = device_control.set_device_name(name);
@@ -102,7 +100,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
         let mut buffer = [0u8; 8];
 
@@ -123,7 +121,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
 
         let result = device_control.get_device_version();
@@ -142,7 +140,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
 
         let result = device_control.get_device_version();
@@ -167,7 +165,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
 
         let result = device_control.set_device_rail_capability(request_body);
@@ -182,7 +180,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
 
         let result = device_control.get_device_rail_capability();
@@ -198,7 +196,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
 
         let result = device_control.get_device_rail_capability();
@@ -216,7 +214,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
 
         let result = device_control.get_device_time();
@@ -240,7 +238,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
 
         let result = device_control.get_device_id();
@@ -256,7 +254,7 @@ mod tests {
             Vec::new(),
             Err(DobotError::Protocol(ProtocolError::ChecksumError)),
         );
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = DeviceSerialControl::new(&mut mutex);
         let mut buffer = [0u8; 32];
 

@@ -17,8 +17,7 @@ pub trait HomeControl {
     fn set_home_params(
         &mut self,
         params: TagHomeParams,
-        wait: bool,
-        is_queued: bool,
+        is_queued: bool
     ) -> Result<Option<u64>, DobotError>;
 
     /// Gets homing parameters.
@@ -35,8 +34,7 @@ pub trait HomeControl {
     fn set_home_cmd(
         &mut self,
         params: TagHomeCmd,
-        wait: bool,
-        is_queued: bool,
+        is_queued: bool
     ) -> Result<Option<u64>, DobotError>;
 
     /// Sets auto-leveling parameters and initiates auto-leveling.
@@ -49,8 +47,7 @@ pub trait HomeControl {
     fn set_autoleveling(
         &mut self,
         params: TagAutoLevelingParams,
-        wait: bool,
-        is_queued: bool,
+        is_queued: bool
     ) -> Result<Option<u64>, DobotError>;
 
     /// Gets automatic leveling result/status.

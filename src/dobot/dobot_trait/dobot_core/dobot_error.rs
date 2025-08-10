@@ -31,3 +31,8 @@ pub fn parse_poison_err<T, U>(result: Result<T, PoisonError<U>>) -> Result<T, Do
         Err(_) => Err(DobotError::SenderPoisoned),
     }
 }
+
+#[cfg(not(feature = "std"))]
+pub fn parse_poison_err<T, U>(result: Result<T, DobotError>) -> Result<T, DobotError> {
+    return result;
+}

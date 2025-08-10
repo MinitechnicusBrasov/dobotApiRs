@@ -4,12 +4,15 @@ mod test;
 use crate::dobot::dobot_trait::{
     dobot_core::{
         command_sender::{CommandSender, Dobot},
-        dobot_error::{DobotError, parse_poison_err},
+        dobot_error::DobotError,
         sub_command_dobot::device_control::DeviceControl,
     },
     protocol::{
         Body, CommunicationProtocolIDs, ProtocolError,
-        bodies::{general_request::GeneralRequest, tag_with_l::TagWithL},
+        bodies::{
+            general_request::GeneralRequest, general_response::GeneralResponse,
+            tag_empty_body::EmptyBody, tag_with_l::TagWithL,
+        },
         command_id::DeviceInfoIDs,
     },
     rwlock::RwLock,
@@ -31,28 +34,15 @@ impl<'a, T: CommandSender> DeviceControl for DeviceSerialControl<'a, T> {
             params: device_serial_number,
         };
 
-        let mut response_buffer = [0u8; 128];
-        let sender = parse_poison_err(self.command_sender.get_mut())?;
-        let test = spin::RwLock::new(true);
+        let sender = create_sender!(self.command_sender)?;
+        send_cmd!(send sender, GeneralRequest, CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Sn), request_body, write=true)?;
 
-        sender.send_command(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Sn),
-            false,
-            false,
-            request_body,
-            &mut response_buffer,
-        );
         Ok(())
     }
 
     fn get_device_sn(&mut self, buffer: &mut [u8]) -> Result<usize, DobotError> {
-        let sender = self.command_sender.get_mut();
-        let response_body = sender.send_command_with_params(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Sn),
-            true,
-            GeneralRequest { params: &[] },
-            buffer,
-        )?;
+        let sender = create_sender!(self.command_sender)?;
+        let response_body = send_cmd!(get sender, GeneralResponse, CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Sn), buffer)?;
 
         Ok(response_body.params.len())
     }
@@ -61,39 +51,22 @@ impl<'a, T: CommandSender> DeviceControl for DeviceSerialControl<'a, T> {
         let request_body = GeneralRequest {
             params: device_name,
         };
-        let sender = self.command_sender.get_mut();
-        let mut response_buffer = [0u8; 128];
+        let sender = create_sender!(self.command_sender)?;
+        send_cmd!(send sender, GeneralRequest, CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name), request_body, write=true)?;
 
-        sender.send_command_with_params(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name),
-            false,
-            request_body,
-            &mut response_buffer,
-        )?;
         Ok(())
     }
 
     fn get_device_name(&mut self, buffer: &mut [u8]) -> Result<usize, DobotError> {
-        let sender = self.command_sender.get_mut();
-        let response_body = sender.send_command_with_params(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name),
-            true,
-            GeneralRequest { params: &[] },
-            buffer,
-        )?;
-
+        let sender = create_sender!(self.command_sender)?;
+        let response_body = send_cmd!(get sender, GeneralResponse, CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Name), buffer)?;
         Ok(response_body.params.len())
     }
 
     fn get_device_version(&mut self) -> Result<(u8, u8, u8), DobotError> {
-        let sender = self.command_sender.get_mut();
-        let mut response_buffer = [0u8; 128];
-        let response_body = sender.send_command_with_params(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Version),
-            true,
-            GeneralRequest { params: &[] },
-            &mut response_buffer,
-        )?;
+        let sender = create_sender!(self.command_sender)?;
+        let mut response_buffer = [0u8; 3];
+        let response_body = send_cmd!(get sender, GeneralResponse, CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Version), &mut response_buffer)?;
 
         let params = response_body.params;
         if params.len() < 3 {
@@ -104,27 +77,16 @@ impl<'a, T: CommandSender> DeviceControl for DeviceSerialControl<'a, T> {
     }
 
     fn set_device_rail_capability(&mut self, params: TagWithL) -> Result<(), DobotError> {
-        let mut response_buffer = [0u8; 128];
-        let sender = self.command_sender.get_mut();
+        let sender = create_sender!(self.command_sender)?;
 
-        sender.send_command_with_params(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::WithRail),
-            false,
-            params,
-            &mut response_buffer,
-        )?;
+        send_cmd!(send sender, TagWithL, CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::WithRail), params, write=true)?;
         Ok(())
     }
 
     fn get_device_rail_capability(&mut self) -> Result<bool, DobotError> {
-        let mut response_buffer = [0u8; 128];
-        let sender = self.command_sender.get_mut();
-        let response_body = sender.send_command_with_params(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::WithRail),
-            true,
-            GeneralRequest { params: &[] },
-            &mut response_buffer,
-        )?;
+        let mut response_buffer = [0u8; 1];
+        let sender = create_sender!(self.command_sender)?;
+        let response_body = send_cmd!(get sender, GeneralResponse, CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::WithRail), &mut response_buffer)?;
 
         if response_body.params.is_empty() {
             return Err(DobotError::Protocol(ProtocolError::InvalidOperation));
@@ -134,14 +96,9 @@ impl<'a, T: CommandSender> DeviceControl for DeviceSerialControl<'a, T> {
     }
 
     fn get_device_time(&mut self) -> Result<u32, DobotError> {
-        let mut response_buffer = [0u8; 128];
-        let sender = self.command_sender.get_mut();
-        let response_body = sender.send_command_with_params(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Time),
-            true,
-            GeneralRequest { params: &[] },
-            &mut response_buffer,
-        )?;
+        let mut response_buffer = [0u8; 4];
+        let sender = create_sender!(self.command_sender)?;
+        let response_body = send_cmd!(get sender, GeneralResponse, CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Time), &mut response_buffer)?;
 
         let params = response_body.params;
         if params.len() < 4 {
@@ -153,14 +110,9 @@ impl<'a, T: CommandSender> DeviceControl for DeviceSerialControl<'a, T> {
     }
 
     fn get_device_id(&mut self) -> Result<(u32, u32, u32), DobotError> {
-        let mut response_buffer = [0u8; 128];
-        let sender = self.command_sender.get_mut();
-        let response_body = sender.send_command_with_params(
-            CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Id),
-            true,
-            GeneralRequest { params: &[] },
-            &mut response_buffer,
-        )?;
+        let mut response_buffer = [0u8; 12];
+        let sender = create_sender!(self.command_sender)?;
+        let response_body = send_cmd!(get sender, GeneralResponse, CommunicationProtocolIDs::DeviceInfo(DeviceInfoIDs::Id), &mut response_buffer)?;
 
         let params = response_body.params;
         if params.len() < 12 {

@@ -6,13 +6,13 @@ mod tests {
         dobot_core_serial::sub_command_dobot::alarm_control::AlarmSerialControl,
         dobot_trait::{
             dobot_core::{
-                command_sender::mock_command_sender::{MockCommandSender, create_response_packet},
+                command_sender::{mock_command_sender::{create_response_packet, MockCommandSender}, Dobot},
                 dobot_error::DobotError,
                 sub_command_dobot::alarm_control::AlarmControl,
             },
             protocol::{
-                CommunicationProtocolIDs, ProtocolError, alarm::Alarm, command_id::AlarmIDs,
-            },
+                alarm::Alarm, command_id::AlarmIDs, CommunicationProtocolIDs, ProtocolError
+            }, rwlock::RwLock,
         },
     };
 
@@ -32,7 +32,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut alarm_control = AlarmSerialControl::new(&mut mutex);
 
         let result = alarm_control.get_active_alarms();
@@ -61,7 +61,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut alarm_control = AlarmSerialControl::new(&mut mutex);
 
         let result = alarm_control.get_active_alarms();
@@ -81,7 +81,7 @@ mod tests {
             Vec::new(),
             Err(DobotError::Protocol(ProtocolError::ChecksumError)),
         );
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut alarm_control = AlarmSerialControl::new(&mut mutex);
         let result = alarm_control.get_active_alarms();
 
@@ -102,7 +102,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut alarm_control = AlarmSerialControl::new(&mut mutex);
 
         let result = alarm_control.clear_all_alarms_state();
@@ -117,7 +117,7 @@ mod tests {
             Vec::new(),
             Err(DobotError::Protocol(ProtocolError::ChecksumError)),
         );
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut alarm_control = AlarmSerialControl::new(&mut mutex);
 
         let result = alarm_control.clear_all_alarms_state();

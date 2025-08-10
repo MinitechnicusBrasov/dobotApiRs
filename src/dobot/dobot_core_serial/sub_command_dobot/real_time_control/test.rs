@@ -5,7 +5,7 @@ mod tests {
     use crate::dobot::{
         dobot_core_serial::sub_command_dobot::real_time_control::RealTimePoseSerialControl, dobot_trait::{
             dobot_core::{
-                command_sender::mock_command_sender::{create_response_packet, MockCommandSender},
+                command_sender::{mock_command_sender::{create_response_packet, MockCommandSender}, Dobot},
                 dobot_error::DobotError,
                 sub_command_dobot::real_time_control::RealTimeControl,
             },
@@ -13,7 +13,7 @@ mod tests {
                 bodies::tag_pose::TagPose,
                 command_id::{DeviceInfoIDs, DevicePoseIDs},
                 CommunicationProtocolIDs, ProtocolError,
-            },
+            }, rwlock::RwLock,
         }
     };
 
@@ -30,10 +30,11 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = RealTimePoseSerialControl::new(&mut mutex);
 
         let result = device_control.reset_pose(manual, rear_arm_angle, front_arm_angle);
+        println!("{:?}", result.clone().err());
 
         assert!(result.is_ok());
     }
@@ -49,7 +50,7 @@ mod tests {
             Vec::new(),
             Err(DobotError::Protocol(ProtocolError::ChecksumError)),
         );
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = RealTimePoseSerialControl::new(&mut mutex);
 
         let result = device_control.reset_pose(manual, rear_arm_angle, front_arm_angle);
@@ -88,7 +89,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = RealTimePoseSerialControl::new(&mut mutex);
 
         let result = device_control.get_pose();
@@ -107,7 +108,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = RealTimePoseSerialControl::new(&mut mutex);
 
         let result = device_control.get_pose();
@@ -131,7 +132,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = RealTimePoseSerialControl::new(&mut mutex);
 
         let result = device_control.get_pose_rail();
@@ -150,7 +151,7 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = Mutex::new(mock_sender);
+        let mut mutex = create_mock_sender_lock!(mock_sender);
         let mut device_control = RealTimePoseSerialControl::new(&mut mutex);
 
         let result = device_control.get_pose_rail();
