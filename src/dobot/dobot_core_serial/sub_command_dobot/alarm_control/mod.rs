@@ -5,20 +5,25 @@ use critical_section::Mutex;
 
 use crate::dobot::dobot_trait::{
     dobot_core::{
-        command_sender::{CommandSender, Dobot}, dobot_error::DobotError,
+        command_sender::{CommandSender, Dobot},
+        dobot_error::DobotError,
         sub_command_dobot::alarm_control::AlarmControl,
     },
     protocol::{
-        alarm::Alarm, bodies::{general_response::GeneralResponse, tag_empty_body::EmptyBody}, command_id::AlarmIDs, CommunicationProtocolIDs, ProtocolError
-    }, rwlock::RwLock,
+        CommunicationProtocolIDs, ProtocolError,
+        alarm::Alarm,
+        bodies::{general_response::GeneralResponse, tag_empty_body::EmptyBody},
+        command_id::AlarmIDs,
+    },
+    rwlock::RwLock,
 };
 
 pub struct AlarmSerialControl<'a, T: CommandSender> {
-    command_sender: &'a mut RwLock<Dobot<T>>,
+    command_sender: &'a RwLock<Dobot<T>>,
 }
 
 impl<'a, T: CommandSender> AlarmSerialControl<'a, T> {
-    pub fn new(command_sender: &'a mut RwLock<Dobot<T>>) -> Self {
+    pub fn new(command_sender: &'a RwLock<Dobot<T>>) -> Self {
         Self { command_sender }
     }
 }
@@ -29,7 +34,6 @@ impl<'a, T: CommandSender> AlarmControl for AlarmSerialControl<'a, T> {
         let mut response_buffer = [0u8; 16];
 
         let response = send_cmd!(get sender, GeneralResponse, CommunicationProtocolIDs::Alarm(AlarmIDs::GetAlarmState), &mut response_buffer)?;
-
 
         println!("{}", response.params.len());
         if response.params.len() < 16 {

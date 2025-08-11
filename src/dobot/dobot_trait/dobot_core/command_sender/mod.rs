@@ -170,7 +170,7 @@ impl<T: CommandSender> Dobot<T> {
 #[macro_export]
 macro_rules! create_sender {
     ($sender: expr) => {
-        $crate::dobot::dobot_trait::dobot_core::dobot_error::parse_poison_err($sender.get_mut())
+        $crate::dobot::dobot_trait::dobot_core::dobot_error::parse_poison_err($sender.write())
     };
 }
 

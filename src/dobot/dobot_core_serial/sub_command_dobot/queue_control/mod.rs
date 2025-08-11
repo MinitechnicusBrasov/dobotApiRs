@@ -23,11 +23,11 @@ use crate::dobot::dobot_trait::{
 };
 
 pub struct QueueSerialControl<'a, T: CommandSender> {
-    command_sender: &'a mut RwLock<Dobot<T>>,
+    command_sender: &'a RwLock<Dobot<T>>,
 }
 
 impl<'a, T: CommandSender> QueueSerialControl<'a, T> {
-    pub fn new(command_sender: &'a mut RwLock<Dobot<T>>) -> Self {
+    pub fn new(command_sender: &'a RwLock<Dobot<T>>) -> Self {
         Self { command_sender }
     }
 }
