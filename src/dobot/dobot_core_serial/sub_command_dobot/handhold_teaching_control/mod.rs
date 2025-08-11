@@ -11,13 +11,9 @@ use crate::dobot::dobot_trait::{
         },
     },
     protocol::{
-        CommunicationProtocolIDs, ProtocolError,
         bodies::{
-            general_response::GeneralResponse, tag_auto_leveling_params::TagAutoLevelingParams,
-            tag_empty_body::EmptyBody, tag_home_cmd::TagHomeCmd, tag_home_params::TagHomeParams,
-            tag_queue::received::TagQueue,
-        },
-        command_id::HomeIDs,
+            general_request::GeneralRequest, general_response::GeneralResponse, hht_trig_mode::HHTTrigMode, tag_auto_leveling_params::TagAutoLevelingParams, tag_empty_body::EmptyBody, tag_home_cmd::TagHomeCmd, tag_home_params::TagHomeParams, tag_queue::received::TagQueue
+        }, command_id::{HhtIDs, HomeIDs}, CommunicationProtocolIDs, ProtocolError
     },
     rwlock::RwLock,
 };
@@ -35,9 +31,15 @@ impl<'a, T: CommandSender> HandholdTeachingSerialControl<'a, T> {
 impl<'a, T: CommandSender> HandholdTeachingControl for HandholdTeachingSerialControl<'a, T> {
     fn set_hht_trig_mode(
         &mut self,
-        mode: crate::dobot::dobot_trait::protocol::bodies::hht_trig_mode::HHTTrigMode,
+        mode: HHTTrigMode,
     ) -> Result<(), DobotError> {
-        todo!()
+        let sender = create_sender!(self.command_sender)?;
+        let request_buffer = [mode as u8];
+        let request = GeneralRequest { params: &request_buffer };
+        
+        send_cmd!(send sender, GeneralRequest, CommunicationProtocolIDs::Hht(HhtIDs::SetGetHhtTrigMode), request, write=true)?;
+        
+        Ok(())
     }
 
     fn get_hht_trig_mode(
