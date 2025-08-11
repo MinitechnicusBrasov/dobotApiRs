@@ -1,5 +1,5 @@
 [package]
-name = "dobotApiRs"
+name = "dobot_api_rs"
 version = "0.2.0"
 edition = "2024"
 
