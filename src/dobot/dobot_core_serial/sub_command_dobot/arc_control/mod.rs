@@ -1,23 +1,20 @@
 #[cfg(feature = "std")]
 mod test;
 
+use crate::dobot::dobot_trait::protocol::bodies::tag_empty_body::EmptyBody;
+use crate::dobot::dobot_trait::protocol::bodies::tag_queue::received::TagQueue;
 use crate::dobot::dobot_trait::{
     dobot_core::{
         command_sender::{CommandSender, Dobot},
         dobot_error::DobotError,
-        sub_command_dobot::{
-            arc_control::ArcControl, cp_control::CPControl, home_control::HomeControl,
-            jog_control::JOGControl, ptp_control::PTPControl,
-        },
+        sub_command_dobot::
+            arc_control::ArcControl
+        ,
     },
     protocol::{
-        CommunicationProtocolIDs, ProtocolError,
         bodies::{
-            general_response::GeneralResponse, tag_auto_leveling_params::TagAutoLevelingParams,
-            tag_empty_body::EmptyBody, tag_home_cmd::TagHomeCmd, tag_home_params::TagHomeParams,
-            tag_queue::received::TagQueue,
-        },
-        command_id::HomeIDs,
+            tag_arc_cmd::TagARCCmd, tag_arc_params::TagARCParams
+        }, command_id::ArcIDs, CommunicationProtocolIDs
     },
     rwlock::RwLock,
 };
@@ -35,26 +32,41 @@ impl<'a, T: CommandSender> ArcSerialControl<'a, T> {
 impl<'a, T: CommandSender> ArcControl for ArcSerialControl<'a, T> {
     fn set_arc_params(
         &mut self,
-        params: crate::dobot::dobot_trait::protocol::bodies::tag_arc_params::TagARCParams,
-        wait: bool,
+        params: TagARCParams,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError> {
-        todo!()
+        let sender = create_sender!(self.command_sender)?;
+        if is_queued {
+            let mut response = [0u8; 8];
+            let queue_idx = send_cmd!(get_queue sender, TagARCParams, CommunicationProtocolIDs::Arc(ArcIDs::ArcParams), params, &mut response, write=true)?;
+            return Ok(Some(queue_idx.queue_idx));
+        }
+        send_cmd!(send sender, TagARCParams, CommunicationProtocolIDs::Arc(ArcIDs::ArcParams), params, write=true)?;
+        Ok(None)
     }
 
     fn get_arc_params(
         &mut self,
-    ) -> Result<crate::dobot::dobot_trait::protocol::bodies::tag_arc_params::TagARCParams, DobotError>
+    ) -> Result<TagARCParams, DobotError>
     {
-        todo!()
+        let sender = create_sender!(self.command_sender)?;
+        let mut response_buffer = [0u8; 16];
+        let response = send_cmd!(get sender, TagARCParams, CommunicationProtocolIDs::Arc(ArcIDs::ArcParams), &mut response_buffer)?;
+        Ok(response)
     }
 
     fn set_arc_cmd(
         &mut self,
-        cmd: crate::dobot::dobot_trait::protocol::bodies::tag_arc_cmd::TagARCCmd,
-        wait: bool,
+        cmd: TagARCCmd,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError> {
-        todo!()
+        let sender = create_sender!(self.command_sender)?;
+        if is_queued {
+            let mut response = [0u8; 8];
+            let queue_idx = send_cmd!(get_queue sender, TagARCCmd, CommunicationProtocolIDs::Arc(ArcIDs::ArcCmd), cmd, &mut response, write=true)?;
+            return Ok(Some(queue_idx.queue_idx));
+        }
+        send_cmd!(send sender, TagARCCmd, CommunicationProtocolIDs::Arc(ArcIDs::ArcParams), cmd, write=true)?;
+        Ok(None)
     }
 }
