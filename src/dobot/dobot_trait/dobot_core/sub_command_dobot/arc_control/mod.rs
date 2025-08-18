@@ -14,7 +14,6 @@ pub trait ArcControl {
     fn set_arc_params(
         &mut self,
         params: TagARCParams,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -32,7 +31,6 @@ pub trait ArcControl {
     fn set_arc_cmd(
         &mut self,
         cmd: TagARCCmd,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 }
