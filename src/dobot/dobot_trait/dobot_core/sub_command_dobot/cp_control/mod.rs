@@ -14,7 +14,6 @@ pub trait CPControl {
     fn set_cp_cmd(
         &mut self,
         cmd: TagCPCmd,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -28,7 +27,6 @@ pub trait CPControl {
     fn set_cp_params(
         &mut self,
         params: TagCPParams,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -46,7 +44,6 @@ pub trait CPControl {
     fn set_cp_le_cmd(
         &mut self,
         cmd: TagCPCmd,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 }

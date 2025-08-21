@@ -11,13 +11,9 @@ use crate::dobot::dobot_trait::{
         },
     },
     protocol::{
-        CommunicationProtocolIDs, ProtocolError,
         bodies::{
-            general_response::GeneralResponse, tag_auto_leveling_params::TagAutoLevelingParams,
-            tag_empty_body::EmptyBody, tag_home_cmd::TagHomeCmd, tag_home_params::TagHomeParams,
-            tag_queue::received::TagQueue,
-        },
-        command_id::HomeIDs,
+            general_response::GeneralResponse, tag_auto_leveling_params::TagAutoLevelingParams, tag_cp_cmd::TagCPCmd, tag_cp_params::TagCPParams, tag_empty_body::EmptyBody, tag_home_cmd::TagHomeCmd, tag_home_params::TagHomeParams, tag_queue::received::TagQueue
+        }, command_id::{CpIDs, HomeIDs}, CommunicationProtocolIDs, ProtocolError
     },
     rwlock::RwLock,
 };
@@ -35,35 +31,57 @@ impl<'a, T: CommandSender> CPSerialControl<'a, T> {
 impl<'a, T: CommandSender> CPControl for CPSerialControl<'a, T> {
     fn set_cp_cmd(
         &mut self,
-        cmd: crate::dobot::dobot_trait::protocol::bodies::tag_cp_cmd::TagCPCmd,
-        wait: bool,
+        cmd: TagCPCmd,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError> {
-        todo!()
+        let sender = create_sender!(self.command_sender)?;
+        if is_queued {
+            let mut response = [0u8; 8];
+            let queue_idx = send_cmd!(get_queue sender, TagCPCmd, CommunicationProtocolIDs::Cp(CpIDs::CpCmd), cmd, &mut response, write=true)?;
+            return Ok(Some(queue_idx.queue_idx));
+        }
+        send_cmd!(send sender, TagCPCmd, CommunicationProtocolIDs::Cp(CpIDs::CpCmd), cmd, write=true)?;
+        Ok(None)
     }
 
     fn set_cp_params(
         &mut self,
-        params: crate::dobot::dobot_trait::protocol::bodies::tag_cp_params::TagCPParams,
-        wait: bool,
+        params: TagCPParams,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError> {
-        todo!()
+        let sender = create_sender!(self.command_sender)?;
+        if is_queued {
+            let mut response = [0u8; 8];
+            let queue_idx = send_cmd!(get_queue sender, TagCPParams, CommunicationProtocolIDs::Cp(CpIDs::CpParams), params, &mut response, write=true)?;
+            return Ok(Some(queue_idx.queue_idx));
+        }
+        send_cmd!(send sender, TagCPParams, CommunicationProtocolIDs::Cp(CpIDs::CpParams), params, write=true)?;
+        Ok(None)
     }
 
     fn get_cp_params(
         &mut self,
-    ) -> Result<crate::dobot::dobot_trait::protocol::bodies::tag_cp_params::TagCPParams, DobotError>
+    ) -> Result<TagCPParams, DobotError>
     {
-        todo!()
+        let sender = create_sender!(self.command_sender)?;
+        let mut response_buffer = [0u8; 13];
+
+        let result = send_cmd!(get sender, TagCPParams, CommunicationProtocolIDs::Cp(CpIDs::CpParams), &mut response_buffer)?;
+        Ok(result)
     }
 
     fn set_cp_le_cmd(
         &mut self,
-        cmd: crate::dobot::dobot_trait::protocol::bodies::tag_cp_cmd::TagCPCmd,
-        wait: bool,
+        cmd: TagCPCmd,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError> {
-        todo!()
+        let sender = create_sender!(self.command_sender)?;
+        if is_queued {
+            let mut response = [0u8; 8];
+            let queue_idx = send_cmd!(get_queue sender, TagCPCmd, CommunicationProtocolIDs::Cp(CpIDs::CpleCmd), cmd, &mut response, write=true)?;
+            return Ok(Some(queue_idx.queue_idx));
+        }
+        send_cmd!(send sender, TagCPCmd, CommunicationProtocolIDs::Cp(CpIDs::CpleCmd), cmd, write=true)?;
+        Ok(None)
     }
 }
