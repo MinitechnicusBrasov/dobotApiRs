@@ -17,7 +17,6 @@ pub trait IOControl {
     fn set_io_multiplexing(
         &mut self,
         params: TagIOMultiplexing,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -38,7 +37,6 @@ pub trait IOControl {
     fn set_io_do(
         &mut self,
         params: TagIODO,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -59,7 +57,6 @@ pub trait IOControl {
     fn set_io_pwm(
         &mut self,
         params: TagIOPWM,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -94,7 +91,6 @@ pub trait IOControl {
     fn set_e_motor(
         &mut self,
         params: TagEMotor,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -108,7 +104,6 @@ pub trait IOControl {
     fn set_color_sensor(
         &mut self,
         params: TagDevice,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -129,7 +124,6 @@ pub trait IOControl {
     fn set_ir_switch(
         &mut self,
         params: TagDevice,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
