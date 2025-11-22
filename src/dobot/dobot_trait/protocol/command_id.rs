@@ -103,10 +103,10 @@ define_protocol_group! {
 
 // HHT
 define_protocol_group! {
-    Hht, HhtIDs, 40, {
-        SetGetHhtTrigMode = 0,
-        SetGetHhtTrigOutputEnabled = 1,
-        GetHhtTrigOutput = 2,
+    HHT, HHTIDs, 40, {
+        HHTTrigMode = 0,
+        HHTTrigOutputEnabled = 1,
+        HHTTrigOutput = 2,
     }
 }
 
@@ -285,7 +285,7 @@ pub enum CommunicationProtocolIDs {
     Home(HomeIDs),
 
     // HHT (Base = 40)
-    Hht(HhtIDs),
+    HHT(HHTIDs),
 
     // ARM ORIENTATION (Base = 50)
     ArmOrientation(ArmOrientationIDs),
@@ -350,7 +350,7 @@ impl TryFrom<u8> for CommunicationProtocolIDs {
             // HOME (30-39)
             30..=39 => HomeIDs::try_from(value).map(CommunicationProtocolIDs::from),
             // HHT (40-49)
-            40..=49 => HhtIDs::try_from(value).map(CommunicationProtocolIDs::from),
+            40..=49 => HHTIDs::try_from(value).map(CommunicationProtocolIDs::from),
             // ARM ORIENTATION (50-59)
             50..=59 => ArmOrientationIDs::try_from(value).map(CommunicationProtocolIDs::from),
             // END EFFECTOR (60-69)
@@ -395,7 +395,7 @@ impl From<CommunicationProtocolIDs> for u8 {
             CommunicationProtocolIDs::DevicePose(val) => val as u8,
             CommunicationProtocolIDs::Alarm(val) => val as u8,
             CommunicationProtocolIDs::Home(val) => val as u8,
-            CommunicationProtocolIDs::Hht(val) => val as u8,
+            CommunicationProtocolIDs::HHT(val) => val as u8,
             CommunicationProtocolIDs::ArmOrientation(val) => val as u8,
             CommunicationProtocolIDs::EndEffector(val) => val as u8,
             CommunicationProtocolIDs::Jog(val) => val as u8,
