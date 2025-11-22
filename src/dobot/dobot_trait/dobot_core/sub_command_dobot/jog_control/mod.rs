@@ -18,7 +18,6 @@ pub trait JOGControl {
     fn set_jog_joint_params(
         &mut self,
         params: TagJOGJointParams,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -36,7 +35,6 @@ pub trait JOGControl {
     fn set_jog_coordinate_params(
         &mut self,
         params: TagJOGCoordinateParams,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -54,7 +52,6 @@ pub trait JOGControl {
     fn set_jog_common_params(
         &mut self,
         params: TagJOGCommonParams,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -69,12 +66,7 @@ pub trait JOGControl {
     /// `is_queued`: If `true`, command is added to the queue.
     ///
     /// Returns the queued command index if `is_queued` is `true`, otherwise `None`.
-    fn set_jog_cmd(
-        &mut self,
-        cmd: TagJOGCmd,
-        wait: bool,
-        is_queued: bool,
-    ) -> Result<Option<u64>, DobotError>;
+    fn set_jog_cmd(&mut self, cmd: TagJOGCmd, is_queued: bool) -> Result<Option<u64>, DobotError>;
 
     /// Sets parameters for JOGL (linear jog) mode.
     ///
@@ -86,7 +78,6 @@ pub trait JOGControl {
     fn set_jogl_params(
         &mut self,
         params: TagJOGLParams,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 

@@ -14,6 +14,5 @@ pub trait LosingStepControl {
     /// `is_queued`: If `true`, the command is added to the queue.
     ///
     /// Returns the queued command index if `is_queued` is `true`, otherwise `None`.
-    fn set_lost_step_cmd(&mut self, wait: bool, is_queued: bool)
-    -> Result<Option<u64>, DobotError>;
+    fn set_lost_step_cmd(&mut self, is_queued: bool) -> Result<Option<u64>, DobotError>;
 }
