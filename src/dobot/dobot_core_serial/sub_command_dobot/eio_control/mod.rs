@@ -1,19 +1,20 @@
 #[cfg(feature = "std")]
 mod test;
 
+use crate::dobot::dobot_trait::protocol::bodies::tag_empty_body::EmptyBody;
+use crate::dobot::dobot_trait::protocol::bodies::tag_queue::received::TagQueue;
 use crate::dobot::dobot_trait::{
     dobot_core::{
         command_sender::{CommandSender, Dobot},
         dobot_error::DobotError,
-        sub_command_dobot::{
-            cp_control::CPControl, home_control::HomeControl, io_control::IOControl,
-            jog_control::JOGControl, ptp_control::PTPControl,
-        },
+        sub_command_dobot::
+            io_control::IOControl
+        ,
     },
     protocol::{
         bodies::{
-            general_request::GeneralRequest, general_response::GeneralResponse, level::Level, tag_auto_leveling_params::TagAutoLevelingParams, tag_color::TagColor, tag_device::TagDevice, tag_emotor::TagEMotor, tag_empty_body::EmptyBody, tag_home_cmd::TagHomeCmd, tag_home_params::TagHomeParams, tag_io_do::TagIODO, tag_io_multiplexing::TagIOMultiplexing, tag_io_pwm::TagIOPWM, tag_queue::received::TagQueue
-        }, command_id::{EioIDs, HomeIDs}, CommunicationProtocolIDs, ProtocolError
+            general_request::GeneralRequest, general_response::GeneralResponse, level::Level, tag_color::TagColor, tag_device::TagDevice, tag_emotor::TagEMotor, tag_io_do::TagIODO, tag_io_multiplexing::TagIOMultiplexing, tag_io_pwm::TagIOPWM
+        }, command_id::EioIDs, CommunicationProtocolIDs, ProtocolError
     },
     rwlock::RwLock,
 };
@@ -70,6 +71,7 @@ impl<'a, T: CommandSender> IOControl for IOSerialControl<'a, T> {
             let queue_idx = send_cmd!(get_queue sender, TagIODO, CommunicationProtocolIDs::Eio(EioIDs::Iodo), params, &mut response, write=true)?;
             return Ok(Some(queue_idx.queue_idx));
         }
+
         send_cmd!(send sender, TagIODO, CommunicationProtocolIDs::Eio(EioIDs::Iodo), params, write=true)?;
         Ok(None)
     }
@@ -107,7 +109,7 @@ impl<'a, T: CommandSender> IOControl for IOSerialControl<'a, T> {
     ) -> Result<TagIOPWM, DobotError> {
         let sender = create_sender!(self.command_sender)?;
         let request = GeneralRequest { params: &[address]};
-        let mut response_buffer = [0u8; 1];
+        let mut response_buffer = [0u8; 9];
         let response_body = send_cmd!(get sender, GeneralRequest, TagIOPWM, CommunicationProtocolIDs::Eio(EioIDs::IoPwm), request, &mut response_buffer)?;
 
         Ok(response_body)
