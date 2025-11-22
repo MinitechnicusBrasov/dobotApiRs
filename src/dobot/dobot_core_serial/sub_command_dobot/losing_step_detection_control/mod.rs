@@ -1,23 +1,17 @@
 #[cfg(feature = "std")]
 mod test;
 
+use crate::dobot::dobot_trait::protocol::bodies::tag_queue::received::TagQueue;
 use crate::dobot::dobot_trait::{
     dobot_core::{
         command_sender::{CommandSender, Dobot},
         dobot_error::DobotError,
-        sub_command_dobot::{
-            cp_control::CPControl, home_control::HomeControl, jog_control::JOGControl,
-            losing_step_control::LosingStepControl, ptp_control::PTPControl,
-        },
+        sub_command_dobot::losing_step_control::LosingStepControl,
     },
     protocol::{
-        CommunicationProtocolIDs, ProtocolError,
-        bodies::{
-            general_response::GeneralResponse, tag_auto_leveling_params::TagAutoLevelingParams,
-            tag_empty_body::EmptyBody, tag_home_cmd::TagHomeCmd, tag_home_params::TagHomeParams,
-            tag_queue::received::TagQueue,
-        },
-        command_id::HomeIDs,
+        CommunicationProtocolIDs,
+        bodies::{general_request::GeneralRequest, tag_empty_body::EmptyBody},
+        command_id::LostStepIDs,
     },
     rwlock::RwLock,
 };
@@ -34,14 +28,25 @@ impl<'a, T: CommandSender> LosingStepDetectionSerialControl<'a, T> {
 
 impl<'a, T: CommandSender> LosingStepControl for LosingStepDetectionSerialControl<'a, T> {
     fn set_lost_step_params(&mut self, value: f32) -> Result<(), DobotError> {
-        todo!()
+        let request_body = GeneralRequest {
+            params: &value.to_le_bytes(),
+        };
+
+        let sender = create_sender!(self.command_sender)?;
+        send_cmd!(send sender, GeneralRequest, CommunicationProtocolIDs::LostStep(LostStepIDs::SetLostStepParams), request_body, write=true)?;
+
+        Ok(())
     }
 
-    fn set_lost_step_cmd(
-        &mut self,
-        wait: bool,
-        is_queued: bool,
-    ) -> Result<Option<u64>, DobotError> {
-        todo!()
+    fn set_lost_step_cmd(&mut self, is_queued: bool) -> Result<Option<u64>, DobotError> {
+        let sender = create_sender!(self.command_sender)?;
+
+        if is_queued {
+            let mut response = [0u8; 8];
+            let queue_idx = send_cmd!(get_queue sender, EmptyBody, CommunicationProtocolIDs::LostStep(LostStepIDs::SetLostStepCmd), EmptyBody {  }, &mut response, write=true)?;
+            return Ok(Some(queue_idx.queue_idx));
+        }
+        send_cmd!(send sender, EmptyBody, CommunicationProtocolIDs::LostStep(LostStepIDs::SetLostStepCmd), EmptyBody {  }, write=true)?;
+        Ok(None)
     }
 }
