@@ -19,7 +19,7 @@ mod tests {
         let size = original_params.serialize(&mut buffer).unwrap();
 
         // Assert that the size is correct (3 f64 * 8 bytes/f64 = 24 bytes)
-        assert_eq!(size, 24);
+        assert_eq!(size, 12);
 
         // Deserialize the bytes back into a new struct instance
         let deserialized_params = TagEndEffectorParams::deserialize(&buffer[..size]).unwrap();
@@ -32,7 +32,7 @@ mod tests {
     #[test]
     fn test_tag_end_effector_params_unpack_buffer_too_small() {
         // Create a buffer that is intentionally too small
-        let buffer = [0u8; 23];
+        let buffer = [0u8; 11];
         let result = TagEndEffectorParams::deserialize(&buffer);
 
         // Assert that the deserialization failed with a BufferTooSmall error

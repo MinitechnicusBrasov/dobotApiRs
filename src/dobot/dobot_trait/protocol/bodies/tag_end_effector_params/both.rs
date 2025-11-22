@@ -4,9 +4,9 @@ use crate::dobot::dobot_trait::protocol::{Body, protocol_error::ProtocolError};
 /// This struct corresponds to the Python `tagEndEffectorParams` dataclass.
 #[derive(Debug, PartialEq, Clone)]
 pub struct TagEndEffectorParams {
-    pub x_bias: f64,
-    pub y_bias: f64,
-    pub z_bias: f64,
+    pub x_bias: f32,
+    pub y_bias: f32,
+    pub z_bias: f32,
 }
 
 impl<'a> Body<'a> for TagEndEffectorParams {
@@ -14,7 +14,7 @@ impl<'a> Body<'a> for TagEndEffectorParams {
     /// This is composed of 3 double-precision floating-point numbers (`f64`),
     /// each 8 bytes.
     fn size(&self) -> usize {
-        3 * core::mem::size_of::<f64>()
+        3 * core::mem::size_of::<f32>()
     }
 
     /// Packs the `TagEndEffectorParams` struct into a byte sequence.
@@ -26,7 +26,7 @@ impl<'a> Body<'a> for TagEndEffectorParams {
         }
 
         let mut offset = 0;
-        let double_size = core::mem::size_of::<f64>();
+        let double_size = core::mem::size_of::<f32>();
 
         // Serialize the xBias, yBias, zBias coordinates
         buffer[offset..offset + double_size].copy_from_slice(&self.x_bias.to_le_bytes());
@@ -41,28 +41,28 @@ impl<'a> Body<'a> for TagEndEffectorParams {
     /// Unpacks a byte sequence into a `TagEndEffectorParams` struct.
     /// This corresponds to the Python `unpack` method.
     fn deserialize(buffer: &[u8]) -> Result<Self, ProtocolError> {
-        let size = 3 * core::mem::size_of::<f64>();
+        let size = 3 * core::mem::size_of::<f32>();
         if buffer.len() < size {
             return Err(ProtocolError::BufferTooSmall);
         }
 
         let mut offset = 0;
-        let double_size = core::mem::size_of::<f64>();
+        let double_size = core::mem::size_of::<f32>();
 
         // Deserialize the xBias, yBias, zBias coordinates
-        let mut x_bias_bytes = [0u8; 8];
+        let mut x_bias_bytes = [0u8; 4];
         x_bias_bytes.copy_from_slice(&buffer[offset..offset + double_size]);
-        let x_bias = f64::from_le_bytes(x_bias_bytes);
+        let x_bias = f32::from_le_bytes(x_bias_bytes);
         offset += double_size;
 
-        let mut y_bias_bytes = [0u8; 8];
+        let mut y_bias_bytes = [0u8; 4];
         y_bias_bytes.copy_from_slice(&buffer[offset..offset + double_size]);
-        let y_bias = f64::from_le_bytes(y_bias_bytes);
+        let y_bias = f32::from_le_bytes(y_bias_bytes);
         offset += double_size;
 
-        let mut z_bias_bytes = [0u8; 8];
+        let mut z_bias_bytes = [0u8; 4];
         z_bias_bytes.copy_from_slice(&buffer[offset..offset + double_size]);
-        let z_bias = f64::from_le_bytes(z_bias_bytes);
+        let z_bias = f32::from_le_bytes(z_bias_bytes);
 
         Ok(Self {
             x_bias,

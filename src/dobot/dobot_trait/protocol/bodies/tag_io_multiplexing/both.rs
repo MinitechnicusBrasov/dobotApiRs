@@ -62,7 +62,7 @@ impl<'a> Body<'a> for TagIOMultiplexing {
         buffer[..u8_size].copy_from_slice(&self.address.to_le_bytes());
 
         // Serialize the multiplex enum value as a u8
-        buffer[u8_size..].copy_from_slice(&(self.multiplex as u8).to_le_bytes());
+        buffer[u8_size..u8_size + 1].copy_from_slice(&(self.multiplex as u8).to_le_bytes());
 
         Ok(size)
     }

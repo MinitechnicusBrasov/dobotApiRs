@@ -32,7 +32,7 @@ impl<'a> Body<'a> for TagIODO {
         buffer[..u8_size].copy_from_slice(&self.address.to_le_bytes());
 
         // Serialize the level enum value as a u8
-        buffer[u8_size..].copy_from_slice(&(self.level as u8).to_le_bytes());
+        buffer[u8_size..u8_size+1].copy_from_slice(&(self.level as u8).to_le_bytes());
 
         Ok(size)
     }
