@@ -35,7 +35,6 @@ pub trait PTPControl {
     fn set_ptpl_params(
         &mut self,
         params: TagPTPLParams,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -53,7 +52,6 @@ pub trait PTPControl {
     fn set_ptp_with_rail_cmd(
         &mut self,
         cmd: TagPTPWithLCmd,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -67,7 +65,6 @@ pub trait PTPControl {
     fn set_ptp_jump2_params(
         &mut self,
         params: TagPTPJump2Params,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -87,7 +84,6 @@ pub trait PTPControl {
         &mut self,
         ptp_cmd: TagPTPCmd,
         po_cmds: &[TagPOCmd],
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -103,7 +99,6 @@ pub trait PTPControl {
         &mut self,
         ptp_cmd: TagPTPWithLCmd,
         po_cmds: &[TagPOCmd],
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -117,7 +112,6 @@ pub trait PTPControl {
     fn set_ptp_joint_params(
         &mut self,
         params: TagPTPJointParams,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -131,7 +125,6 @@ pub trait PTPControl {
     fn set_ptp_coordinate_params(
         &mut self,
         params: TagPTPCoordinateParams,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -145,7 +138,6 @@ pub trait PTPControl {
     fn set_ptp_jump_params(
         &mut self,
         params: TagPTPJumpParams,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -159,7 +151,6 @@ pub trait PTPControl {
     fn set_ptp_common_params(
         &mut self,
         params: TagPTPCommonParams,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 
@@ -173,7 +164,6 @@ pub trait PTPControl {
     fn set_ptp_cmd(
         &mut self,
         cmd: TagPTPCmd,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 }
