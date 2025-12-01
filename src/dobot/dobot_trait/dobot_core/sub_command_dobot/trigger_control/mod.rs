@@ -10,10 +10,6 @@ pub trait TriggerControl {
     /// `is_queued`: If `true`, command is added to the queue.
     ///
     /// Returns the queued command index if `is_queued` is `true`, otherwise `None`.
-    fn set_trig_cmd(
-        &mut self,
-        cmd: TagTRIGCmd,
-        wait: bool,
-        is_queued: bool,
-    ) -> Result<Option<u64>, DobotError>;
+    fn set_trig_cmd(&mut self, cmd: TagTRIGCmd, is_queued: bool)
+    -> Result<Option<u64>, DobotError>;
 }
