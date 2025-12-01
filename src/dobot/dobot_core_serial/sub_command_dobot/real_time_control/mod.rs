@@ -1,24 +1,12 @@
 #[cfg(feature = "std")]
 mod test;
 
-use critical_section::Mutex;
 
-use crate::dobot::dobot_trait::{
-    dobot_core::{
+use crate::dobot::dobot_trait::{dobot_core::{
         command_sender::{CommandSender, Dobot},
         dobot_error::DobotError,
         sub_command_dobot::real_time_control::RealTimeControl,
-    },
-    protocol::{
-        Body, CommunicationProtocolIDs, ProtocolError,
-        bodies::{
-            general_request::GeneralRequest, general_response::GeneralResponse,
-            tag_empty_body::EmptyBody, tag_pose::TagPose,
-        },
-        command_id::{DeviceInfoIDs, DevicePoseIDs},
-    },
-    rwlock::RwLock,
-};
+    }, protocol::{bodies::{general_request::GeneralRequest, general_response::GeneralResponse, tag_empty_body::EmptyBody, tag_pose::TagPose}, command_id::DevicePoseIDs, CommunicationProtocolIDs, ProtocolError}, rwlock::RwLock};
 
 pub struct RealTimePoseSerialControl<'a, T: CommandSender> {
     command_sender: &'a RwLock<Dobot<T>>,
