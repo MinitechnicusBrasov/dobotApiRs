@@ -11,7 +11,6 @@ pub trait WaitControl {
     fn set_wait_cmd(
         &mut self,
         timeout: u32,
-        wait: bool,
         is_queued: bool,
     ) -> Result<Option<u64>, DobotError>;
 }
