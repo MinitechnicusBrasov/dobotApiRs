@@ -18,6 +18,7 @@ impl DobotCommandSender {
             .timeout(std::time::Duration::from_millis(1000))
             .open()
             .map_err(|_e| DobotError::Serial)?;
+        port.clear(serialport::ClearBuffer::All)?;
         Ok(Self {
             port: Arc::new(Mutex::new(port)),
         })
