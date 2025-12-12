@@ -81,7 +81,7 @@ pub trait WifiControl {
     /// Gets Wi-Fi gateway settings.
     ///
     /// Returns the WIFIGateway structure.
-    fn get_wifi_gateway(&mut self) -> Result<TagWIFINetmask, DobotError>;
+    fn get_wifi_gateway(&mut self) -> Result<TagWIFIGateway, DobotError>;
 
     /// Sets Wi-Fi DNS settings.
     ///

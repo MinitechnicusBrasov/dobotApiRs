@@ -11,6 +11,9 @@ pub enum DobotError {
     #[error("A Protocol packet error occured: {0}")]
     Protocol(#[from] ProtocolError),
 
+    #[error("Couldn't parse byte array to string")]
+    StrConversion(#[from] core::str::Utf8Error),
+
     #[cfg(feature = "std")]
     #[error("Command sender has been poisoned by a write error")]
     SenderPoisoned,
