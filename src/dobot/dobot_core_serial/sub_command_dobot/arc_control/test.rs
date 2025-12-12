@@ -95,7 +95,6 @@ mod tests {
         let mut arc_control = ArcSerialControl::new(&mut mutex);
 
         let result = arc_control.get_arc_params();
-        println!("{:?}", result.clone().err());
         assert!(result.is_ok());
         let result_params = result.unwrap();
         assert_eq!(result_params.xyz_velocity, expected_params.xyz_velocity);

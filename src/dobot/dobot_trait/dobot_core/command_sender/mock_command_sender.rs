@@ -59,13 +59,14 @@ impl CommandSender for MockCommandSender {
             println!("Reached");
             return Err(DobotError::Protocol(ProtocolError::BufferTooSmall));
         }
-        response_buffer[..len].copy_from_slice(&response_bytes);
+        response_buffer[..len].copy_from_slice(response_bytes);
 
         // Return the pre-configured result.
         let result = match self.response_len.get_mut() {
             Ok(x) => x,
             Err(_) => return Err(DobotError::SenderPoisoned),
         };
+
         result.clone()
     }
 

@@ -132,10 +132,11 @@ mod tests {
 
         let result = cp_control.get_cp_params();
         assert!(result.is_ok());
-        assert_eq!(result.clone().unwrap().plan_acc, expected_params.plan_acc);
-        assert_eq!(result.clone().unwrap().junction_acc, expected_params.junction_acc);
-        assert_eq!(result.clone().unwrap().acceleratio_or_period, expected_params.acceleratio_or_period);
-        assert_eq!(result.clone().unwrap().real_time_track, expected_params.real_time_track);
+        let result_unwrapped = result.unwrap();
+        assert_eq!(result_unwrapped.plan_acc, expected_params.plan_acc);
+        assert_eq!(result_unwrapped.junction_acc, expected_params.junction_acc);
+        assert_eq!(result_unwrapped.acceleratio_or_period, expected_params.acceleratio_or_period);
+        assert_eq!(result_unwrapped.real_time_track, expected_params.real_time_track);
     }
 
     // This test simulates an invalid response for get_cp_params.

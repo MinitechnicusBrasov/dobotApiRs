@@ -34,7 +34,6 @@ mod tests {
         let mut device_control = RealTimePoseSerialControl::new(&mutex);
 
         let result = device_control.reset_pose(manual, rear_arm_angle, front_arm_angle);
-        println!("{:?}", result.clone().err());
 
         assert!(result.is_ok());
     }
@@ -93,7 +92,6 @@ mod tests {
         let mut device_control = RealTimePoseSerialControl::new(&mutex);
 
         let result = device_control.get_pose();
-        println!("{:?}", result.clone().err());
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), expected_pose);
     }

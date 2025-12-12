@@ -1,7 +1,5 @@
 #[cfg(test)]
 mod tests {
-    use critical_section::Mutex;
-
     use crate::dobot::{
         dobot_core_serial::sub_command_dobot::alarm_control::AlarmSerialControl,
         dobot_trait::{
@@ -32,8 +30,8 @@ mod tests {
         );
         let length = mock_response.len();
         let mock_sender = MockCommandSender::new(mock_response, Ok(length));
-        let mut mutex = create_mock_sender_lock!(mock_sender);
-        let mut alarm_control = AlarmSerialControl::new(&mut mutex);
+        let mutex = create_mock_sender_lock!(mock_sender);
+        let mut alarm_control = AlarmSerialControl::new(&mutex);
 
         let result = alarm_control.get_active_alarms();
 
@@ -124,6 +122,7 @@ mod tests {
 
         assert!(result.is_err());
         let err = result.unwrap_err();
+        println!("{}", err);
         assert!(matches!(
             err,
             DobotError::Protocol(ProtocolError::ChecksumError)
