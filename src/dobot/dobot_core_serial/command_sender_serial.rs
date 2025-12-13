@@ -53,6 +53,8 @@ impl CommandSender for DobotCommandSender {
         // Read response. This is a simplified implementation. Real-world might need to read byte-by-byte
         // until a full packet is received (e.g., check for 0xAA 0xAA start bytes).
         println!("Test4");
+        let bytes_to_read = serial_port.bytes_to_read();
+        println!("Bytes to read: {}", bytes_to_read.unwrap());
         
         let bytes_read = serial_port
             .read(response_buffer);
