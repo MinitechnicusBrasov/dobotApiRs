@@ -15,7 +15,7 @@ pub struct DobotCommandSender {
 impl DobotCommandSender {
     pub fn new(port_name: &str) -> Result<Self, DobotError> {
         let port = serialport::new(port_name, 115200)
-            .timeout(std::time::Duration::from_secs(2))
+            .timeout(std::time::Duration::from_secs(10))
             .open()
             .map_err(|_e| DobotError::Serial)?;
         port.clear(serialport::ClearBuffer::All)?;
@@ -39,7 +39,7 @@ impl CommandSender for DobotCommandSender {
         request_packet: &[u8],
         response_buffer: &mut [u8],
     ) -> Result<usize, DobotError> {
-        println!("Sending packet");
+        println!("Sending packet: {:?}", request_packet);
         let mut serial_port = match self.port.lock() {
             Ok(x) => x,
             Err(_) => return Err(DobotError::SenderPoisoned),
