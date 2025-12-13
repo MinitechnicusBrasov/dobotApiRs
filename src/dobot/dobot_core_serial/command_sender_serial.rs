@@ -18,7 +18,7 @@ impl DobotCommandSender {
             .parity(serialport::Parity::None)
             .stop_bits(serialport::StopBits::One)
             .data_bits(serialport::DataBits::Eight)
-            .timeout(std::time::Duration::from_secs(10))
+            .timeout(std::time::Duration::from_secs(2))
             .open()
             .map_err(|_e| DobotError::Serial)?;
         port.clear(serialport::ClearBuffer::All)?;
