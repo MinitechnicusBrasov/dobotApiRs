@@ -18,7 +18,6 @@ impl DobotCommandSender {
             .timeout(std::time::Duration::from_millis(1000))
             .open()
             .map_err(|_e| DobotError::Serial)?;
-        println!("Test");
         port.clear(serialport::ClearBuffer::All)?;
         Ok(Self {
             port: Arc::new(Mutex::new(port)),
@@ -40,6 +39,7 @@ impl CommandSender for DobotCommandSender {
         request_packet: &[u8],
         response_buffer: &mut [u8],
     ) -> Result<usize, DobotError> {
+        println!("Sending packet");
         let mut serial_port = match self.port.lock() {
             Ok(x) => x,
             Err(_) => return Err(DobotError::SenderPoisoned),
