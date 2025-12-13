@@ -15,6 +15,9 @@ pub struct DobotCommandSender {
 impl DobotCommandSender {
     pub fn new(port_name: &str) -> Result<Self, DobotError> {
         let port = serialport::new(port_name, 115200)
+            .parity(serialport::Parity::None)
+            .stop_bits(serialport::StopBits::One)
+            .data_bits(serialport::DataBits::Eight)
             .timeout(std::time::Duration::from_secs(10))
             .open()
             .map_err(|_e| DobotError::Serial)?;
