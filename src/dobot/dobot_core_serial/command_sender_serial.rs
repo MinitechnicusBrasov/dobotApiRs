@@ -44,15 +44,19 @@ impl CommandSender for DobotCommandSender {
             Ok(x) => x,
             Err(_) => return Err(DobotError::SenderPoisoned),
         };
+        println!("Test 2");
         serial_port
             .write_all(request_packet)
             .map_err(|_e| DobotError::IO)?;
+        println!("Test3");
 
         // Read response. This is a simplified implementation. Real-world might need to read byte-by-byte
         // until a full packet is received (e.g., check for 0xAA 0xAA start bytes).
+        println!("Test4");
         let bytes_read = serial_port
             .read(response_buffer)
             .map_err(|_e| DobotError::IO)?;
+        println!("Test5");
 
         Ok(bytes_read)
     }
