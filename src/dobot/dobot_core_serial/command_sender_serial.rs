@@ -1,5 +1,5 @@
 use core::fmt::Debug;
-use std::sync::{Arc, Mutex};
+use std::{sync::{Arc, Mutex}, time};
 
 use serialport::SerialPort;
 
@@ -15,7 +15,7 @@ pub struct DobotCommandSender {
 impl DobotCommandSender {
     pub fn new(port_name: &str) -> Result<Self, DobotError> {
         let port = serialport::new(port_name, 115200)
-            .timeout(std::time::Duration::from_millis(1000))
+            .timeout(std::time::Duration::from_secs(2))
             .open()
             .map_err(|_e| DobotError::Serial)?;
         port.clear(serialport::ClearBuffer::All)?;
@@ -53,6 +53,7 @@ impl CommandSender for DobotCommandSender {
         // Read response. This is a simplified implementation. Real-world might need to read byte-by-byte
         // until a full packet is received (e.g., check for 0xAA 0xAA start bytes).
         println!("Test4");
+        
         let bytes_read = serial_port
             .read(response_buffer);
         println!("Test5");
